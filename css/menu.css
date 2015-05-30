@@ -1,0 +1,80 @@
+
+.appNav {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 30px;
+	z-index: 100;
+}
+
+.appNav>.topMenu {
+	position: relative;
+	background-color: #444;
+	width: 100%;
+	height: 30px;
+}
+
+.appNav .topMenu>li {
+	float:left;
+	position: relative;
+	box-sizing: border-box;
+	height: 28px;
+	padding: 7px 20px;
+	background-color: #fff;
+	cursor:pointer;
+	white-space: nowrap;
+	background-color: #444;
+	color: #bbb;
+}
+
+
+.appNav .topMenu>li.active,
+.appNav .topMenu>li:hover {
+	background-color: #444;
+	color: #fff;
+}
+
+.appNav .subMenu {
+	display:none;
+	position: absolute;
+	z-index: 99;
+	top: 26px;
+	padding-top: 6px;
+	left: -1px;
+	background-color: #444;
+	box-shadow: 3px 3px 4px -2px rgba(0, 0, 0, 0.5);
+	border-radius: 3px;
+}
+
+.appNav .subMenu>li {
+	position: relative;
+	padding: 6px 20px;
+	border-radius: 3px;
+	color: #bbb;
+	cursor:pointer;
+}
+
+.appNav .subMenu>li:last-child {
+	padding-bottom: 14px;
+	
+}
+
+.appNav .subMenu>li:hover {
+	background-color: #444;
+	color: #fff;
+}
+
+.appNav hr {
+	height: 0;
+	border: 0;
+	border-top: 1px solid #555;
+}
+
+.fileUploadInput,
+.fileURLInput {
+	position: absolute;
+	left: 0;
+	top: 0;
+	opacity: 0;
+}

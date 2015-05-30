@@ -1,0 +1,84 @@
+.sp-replacer {
+	position: absolute;
+	border: none;
+	padding: 0;
+	margin: 0 0 4px 0;
+	background-color: transparent;
+	display:inline-block;
+}
+
+.sp-preview {
+	box-sizing: border-box;
+	width: 38px;
+	height: 38px;
+	margin: 0;
+	border: 1px solid #aaa;
+	border-radius: 2px;
+	display:inline-block;
+}
+
+.sp-preview-inner {
+	border-radius: 1px;
+}
+
+.sp-dd {
+	display:none;
+}
+
+.sp-container {
+	border: 1px solid #ddd;
+	box-shadow: -2px 2px 4px -2px #bbb;
+	background-color: #fff;
+}
+
+.sp-clear-display {
+	background-image: none;
+}
+
+.sp-clear.sp-clear-display {
+	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAGUlEQVQYV2M4gwH+YwCGIasIUwhT25BVBADtzYNYrHvv4gAAAABJRU5ErkJggg==);
+	background-repeat: repeat;
+	background-position: top left;
+	width: 24px;
+	height: 24px;
+	cursor:pointer;
+}
+
+.sp-clear-enabled .sp-hue{
+	width: 24px;
+}
+
+.sp-palette {
+	width: 40px;
+}
+
+.fillColorSpec {
+	z-index: 200;
+}
+
+.strokeColorSpec {
+	left: 22px;
+	top: 20px;
+	z-index: 100;
+}
+
+.strokeColorSpec .inner {
+	background-color: #fff;
+	position: absolute;
+	top: 7px;
+	left: 7px;
+	width: 24px;
+	height: 24px;
+	z-index: 2;
+	border: 1px solid #aaa;
+	border-radius: 2px;
+}
+
+.transSpec .sp-preview {
+	height: 18px;
+}
+
+.transSpecContainer .sp-top-inner,
+.transSpecContainer .sp-fill {
+	display:none;
+}

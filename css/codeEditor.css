@@ -1,0 +1,60 @@
+
+.codeEditorContainer {
+	position: absolute;
+	top: 100px;
+	left: 200px;
+	z-index: 4;
+	width: auto;
+	border-radius: 4px;
+}
+
+.codeEditorButtons {
+	position: relative;
+	cursor: move;
+}
+
+.codeEditorArea {
+	display:block;
+	position: relative;
+	min-width: 300px;
+	min-height: 300px;
+	width: 100%;
+	margin: 0;
+	padding: 20px;
+	border: 0;
+	background-color: #eee;
+	font-family: Courier;
+	outline:none;
+	
+	-moz-tab-size:4;
+	-o-tab-size:4;
+	tab-size:4;
+}
+
+
+.closeScriptButton {
+	float:right;
+}
+
+.consoleOutput {
+	position: relative;
+	display:block;
+	max-height: 197px;
+	overflow-y: scroll;
+}
+
+.consoleOutput span {
+	display:block;
+	padding: 4px 10px;
+	font-family: Courier;
+	color: #888;
+	background-color: #ddd;
+	border-top: 1px solid #eee;
+}
+
+.consoleOutput span.error {
+	background-color: red;
+	color: white;
+	border-top: 0;
+	border-bottom: 0;
+}

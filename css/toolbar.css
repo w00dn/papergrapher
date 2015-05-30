@@ -1,0 +1,119 @@
+
+.toolbar {
+	position: absolute;
+	padding: 14px 5px 8px 8px;
+	top: 61px;
+	left:0px;
+	width: 76px;
+	background-color: #fff;
+	border-radius: 0 0 3px 0;
+	z-index: 20;
+}
+
+.toolbarSection {
+	position: relative;
+	margin-bottom: 20px;
+}
+
+.tool {
+	position: relative;
+	display:inline-block;
+	background-color: #fff;
+	line-height: 0;
+	text-align: center;
+	font-size: 0;
+	padding: 0;
+	width: 28px;
+	height: 28px;
+	margin: 0 0 2px 0;
+	cursor:pointer;
+	border-radius: 3px;
+	overflow: hidden;
+	background-repeat:no-repeat;
+	background-size: 28px;
+}
+
+.tool:hover,
+.tool.active {
+	background-color: #e2e2e2;
+}
+
+
+.colorContainer {
+	height: 60px;
+}
+
+.colorSwitchButton {
+	position: absolute;
+	display:block;
+	width: 20px;
+	height: 20px;
+	padding: 0;
+	cursor:pointer;
+	right: 3px;
+	top: 0px;
+	background-image: url(../assets/icon_switchColor.svg);
+	background-size: 16px;
+	background-repeat:no-repeat;
+	background-position: 2px;
+}
+
+.statusBar {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	background-color: white;
+	border-radius: 0 3px 0 0;
+	margin: 0;
+	padding: 5px;
+	height: 33px;
+}
+
+.toolbarSection {
+	position: relative;	
+}
+
+.zoomInput {
+	width: 60px;
+}
+
+
+/* tool palettes */
+
+
+.palettejs-panel {
+	position: absolute;
+	top: 74px;
+	left: 92px;
+	background-color: #fff;
+	padding: 10px 10px 10px 10px;
+	border-radius: 0 0 3px 3px;
+}
+
+.palettejs-panel td {
+	height: 28px;
+}
+
+.palettejs-panel input[type=number] {
+	width: 40px;
+	margin: 0;
+}
+
+.palettejs-panel input[type=checkbox] {
+	margin: 0;
+	vertical-align: bottom;
+}
+
+.palettejs-panel label {
+	margin-right: 10px;
+	display:block;
+	min-height: 20px;
+}
+
+.palettejs-panel label,
+.palettejs-panel input,
+.palettejs-panel select,
+.palettejs-panel button {
+	font-size: 12px;
+}
+
