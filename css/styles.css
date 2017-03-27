@@ -7,6 +7,20 @@ body {
 	font-family: Arial, sans-serif;
 }
 
+#paperCanvas[resize] {
+	width: 100%;
+	height: 100%;
+}
+
+#paperCanvas:not([resize]) {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	margin: auto;
+}
+
 body, input, button, textarea, label {
 	font-size: 14px;
 	line-height: 16px;
@@ -24,27 +38,50 @@ input, select {
 	display:none;
 }
 
+.loadingScreen {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: white;
+	opacity: 1;
+	z-index: 200;
+	transition: opacity 0.5s ease;
+}
+
+.loadingScreen.disabled {
+	opacity: 0;
+}
+
+.loadingScreen .panel {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	background-color: #444;
+	height: 31px;
+	color: #bbb;
+	padding: 0.5em 1.4em;
+}
+
 .zoom-in {
-	/*cursor: url("assets/zoom-in.png") 4 4, auto;*/
 	cursor: -webkit-zoom-in;
 	cursor: zoom-in;
 }
 
 .zoom-out {
-	/*cursor: url("assets/zoom-out.png") 4 4, auto;*/
 	cursor: -webkit-zoom-out;
 	cursor: zoom-out;
 }
 
 .grab {
-	/*cursor: url("assets/grab.cur");*/
 	cursor: -moz-grab;
 	cursor: -webkit-grab;
 	cursor: grab;
 }
 
 .grabbing {
-	/*cursor: url("assets/grabbing.cur");*/
 	cursor: -moz-grabbing;
 	cursor: -webkit-grabbing;
 	cursor: grabbing;

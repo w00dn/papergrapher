@@ -12,10 +12,8 @@ pg.input = function() {
 	
 	var setupKeyboard = function() {
 			
-		$(document).unbind('keydown').bind('keydown', function (event) {
-			
-			console.log('key', event.keyCode);
-			
+		jQuery(document).unbind('keydown').bind('keydown', function (event) {
+
 			if(!isKeyDown(event.keyCode)) {
 				storeDownKey(event.keyCode);
 			}
@@ -108,7 +106,7 @@ pg.input = function() {
 		});
 				
 
-		$(document).keyup(function( event ) {
+		jQuery(document).unbind('keyup').bind('keyup', function( event ) {
 			
 			// remove event key from downkeys
 			var index = downKeys.indexOf(event.keyCode);
@@ -267,7 +265,7 @@ pg.input = function() {
 
 	var setupMouse = function() {
 
-		$('body').on('mousedown', function (e) {
+		jQuery('body').on('mousedown', function (e) {
 			if ((e.which === 1)) { //left
 				mouseIsDown = true;
 			}
@@ -296,12 +294,11 @@ pg.input = function() {
 		});
 		
 
-		$(window).bind('mousewheel DOMMouseScroll', function(event){
+		jQuery(window).bind('mousewheel DOMMouseScroll', function(event){
 			if(event.altKey) {
 				if (pg.toolbar.getActiveTool().name !== 'ViewZoom') {
 					pg.toolbar.switchTool(pg.tools.newToolByName('ViewZoom'));
 				}
-				//console.log(pg.toolbar.activeTool);
 				if(pg.toolbar.getActiveTool()) {
 					pg.toolbar.getActiveTool().updateTool(event);
 				}
@@ -315,7 +312,7 @@ pg.input = function() {
 		setup: setup,
 		isModifierKeyDown: isModifierKeyDown,
 		userIsTyping: userIsTyping,
-		textIsSelected: textIsSelected,
+		textIsSelected: textIsSelected
 	};
 		
 }();

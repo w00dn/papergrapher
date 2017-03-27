@@ -4,7 +4,6 @@ pg.tools.scale = function() {
 	
 	var options = {
 		name: 'Scale',
-		type: 'toolbar',
 		scaleCenter: 'selection',
 		randomScale: false
 	};
@@ -13,14 +12,12 @@ pg.tools.scale = function() {
 		scaleCenter: {
 			type: 'list',
 			label: 'Scale center',
-			options: [ 'individual', 'selection', 'cursor' ],
-			onChange: function() {
-				updateTool();
-			}
+			options: [ 'individual', 'selection', 'cursor' ]
 		},
 		randomScale: {
 			type: 'boolean',
-			label: 'showOnIndividual::Random scale'
+			label: 'Random scale',
+			requirements: {scaleCenter : 'individual'},
 		}
 	};
 	
@@ -31,6 +28,7 @@ pg.tools.scale = function() {
 		var pivotMarker = [];
 		var randomSizes = [];
 		var transformed = false;
+		var mouseDown;
 		
 		// get options from local storage if present
 		options = pg.tools.getLocalOptions(options);
@@ -39,6 +37,7 @@ pg.tools.scale = function() {
 		
 		tool.onMouseDown = function(event) {
 			transformed = false;
+			mouseDown = event.point;
 			
 			selectedItems = pg.selection.getSelectedItems();
 			if(selectedItems.length === 0) return;
@@ -77,18 +76,14 @@ pg.tools.scale = function() {
 				// paint pivot guide
 				pivotMarker[0] = pg.guides.crossPivot(fixedGroupPivot);
 				
-				
 			}
 		};
 		
 		tool.onMouseDrag = function(event) {
 			if(selectedItems.length === 0) return;
-			
-			
-			var amount = event.delta.normalize(0.03);
+			var amount = event.delta.normalize(0.01);
 			amount.x += 1;
 			amount.y += 1;
-			//console.log(amount.x, amount.y);
 						
 			if(!event.modifiers.shift) {
 				amount = amount.x * amount.y;
@@ -109,11 +104,6 @@ pg.tools.scale = function() {
 			} else {
 				for(var i=0; i < selectedItems.length; i++) {
 					selectedItems[i].scale(amount, fixedGroupPivot);
-					var dist = fixedGroupPivot - event.point;
-					var dragDir = 0;
-					
-					
-					//console.log(dist, dist.normalize(1));
 				}				
 			};
 			
@@ -133,33 +123,17 @@ pg.tools.scale = function() {
 			}
 		};
 		
-		// palette stuff
-		var palette = new Palette('Options', components, options);
-		
-		palette.onChange = function(component, name, value) {
+		// setup floating tool options panel in the editor
+		pg.toolOptionPanel.setup(options, components, function(){
 			fixedGroupPivot = null;
-			updateTool();
-		};
+		});
 		
 		tool.activate();
-	};
-	
-	var updateTool = function() {
-		
-		if(options.scaleCenter === 'individual') {
-			$('.showOnIndividual').show();
-		} else {
-			$('.showOnIndividual').hide();
-		}
-		
-		// write the options to jStorage when a value changes
-		pg.tools.setLocalOptions(options);
 	};
 
 
 	return {
 		options:options,
-		activateTool : activateTool,
-		updateTool: updateTool
+		activateTool : activateTool
 	};
 };

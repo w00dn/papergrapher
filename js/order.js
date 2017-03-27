@@ -4,7 +4,7 @@ pg.order = function() {
 
 	var bringSelectionToFront = function() {
 		pg.undo.snapshot('bringSelectionToFront');
-		var items = paper.project.selectedItems;
+		var items = pg.selection.getSelectedItems();
 		for(var i=0; i < items.length; i++) {
 			items[i].bringToFront();
 		}
@@ -12,7 +12,7 @@ pg.order = function() {
 
 	var sendSelectionToBack = function() {
 		pg.undo.snapshot('sendSelectionToBack');
-		var items = paper.project.selectedItems;
+		var items = pg.selection.getSelectedItems();
 		for(var i=0; i < items.length; i++) {
 			items[i].sendToBack();
 		}
@@ -21,7 +21,7 @@ pg.order = function() {
 	
 	return {
 		bringSelectionToFront:bringSelectionToFront,
-		sendSelectionToBack:sendSelectionToBack,
+		sendSelectionToBack:sendSelectionToBack
 	};
 	
 }();

@@ -6,8 +6,7 @@ pg.tools.zoom = function() {
 	var doRectZoom;
 	
 	var options = {
-		name: 'Zoom',
-		type: 'toolbar'
+		name: 'Zoom'
 	};
 	
 	var activateTool = function() {
@@ -37,8 +36,8 @@ pg.tools.zoom = function() {
 			if (event.modifiers.option) {
 				factor = 1 / factor;
 			}
-			view.zoom *= factor;
-			view.center = event.point;
+			paper.view.zoom *= factor;
+			paper.view.center = event.point;
 			pg.toolbar.updateZoom();
 		};
 		
@@ -65,13 +64,13 @@ pg.tools.zoom = function() {
 	};
 	
 	var setCursor = function(cursorString) {
-		var body = $('body');
+		var $body = jQuery('body');
 
-		body.removeClass('zoom-in');
-		body.removeClass('zoom-out');
+		$body.removeClass('zoom-in');
+		$body.removeClass('zoom-out');
 		
 		if(cursorString && cursorString.length > 0) {
-			body.addClass(cursorString);
+			$body.addClass(cursorString);
 		}
 	};
 	

@@ -2,10 +2,10 @@
 pg.document = function() {
 	var center;
 	var clipboard = [];
-	var canvas;
+	
 	
 	var setup = function() {
-		canvas = document.getElementById("paperCanvas");
+		paper.view.center = new paper.Point(0,0);
 		center = paper.view.center;
 	};
 	
@@ -15,7 +15,7 @@ pg.document = function() {
 		paper.view.center = center;
 		paper.view.zoom = 1;
 		pg.undo.clear();
-		var layer = new Layer();
+		var layer = new paper.Layer();
 	};
 	
 	
@@ -39,83 +39,33 @@ pg.document = function() {
 		clipboard = [];
 		return true;
 	};
+
 	
-	
-	var importAndAddImage = function(file) {
-		if(!pg.helper.checkFileType(file, 'Image')) {
-			return;
-		}
+	var loadJSONDocument = function(file) {
+		paper.project.clear();
+		pg.toolbar.setDefaultTool();
+		pg.export.setExportRect();
 		
-		var raster = new paper.Raster({
-			source: file,
-			position: paper.view.center
-		});
-		pg.undo.snapshot('importImage');
-	};
-	
-	
-	var importAndAddSVG = function(file) {
-		if(!pg.helper.checkFileType(file, 'SVG')) {
-			return;
-		}
-		
-		var importLayer = new Layer({name: 'importLayer'});
-		
-		$.get( file, function( data ) {
-			paper.project.importSVG(data, {expandShapes:true});
+		jQuery.getJSON( file, function( data ) {
 			
-		}).done(function() {
-			var importedItems = importLayer.children;
-			
-			// perform one ungroup if there is a single/empty group in the top group
-			if( importedItems.length === 1 && 
-				pg.group.isGroup(importedItems[0]) &&
-				importedItems[0].children.length === 1 &&
-				pg.group.isGroup(importedItems[0].children[0])) { 
-					pg.group.ungroupItems(importedItems);
-					pg.undo.removeLastState();
-				}
-			pg.helper.applyMatrixToItems(importLayer.children);
-			paper.project.layers[0].addChildren(importLayer.children);
-			paper.project.layers[0].activate();
-			importLayer.remove();
-			pg.undo.snapshot('importAndAddSVG');
-			paper.project.view.update();
-		});
-		
-	};
-	
-	
-	var importAndAddJSON = function(file) {
-		
-		var importLayer = new Layer({name: 'importLayer'});
-		$.getJSON( file, function( data ) {
 			paper.project.importJSON(data);
 			
-		}).done(function() {
-			paper.project.layers[0].addChildren(importLayer.children);
-			paper.project.layers[0].activate();
-			importLayer.remove();
+			jQuery.each(paper.project.layers, function(index, layer) {
+				
+				jQuery.each(layer.children, function(index, obj) {
+					if(obj && obj.data && obj.data.isExportRect) {
+						pg.export.setExportRect(new paper.Rectangle(obj.bounds));
+					}
+				});
+			});
 			paper.view.update();
-			pg.undo.snapshot('importAndAddJSON');
+			pg.undo.snapshot('loadJSONDocument');
+
 		});
 	};
 
 	
-	var exportAndPromptSVG = function() {
-		var fileName = prompt("Name your file", "export.svg");
-
-		if (fileName !== null) {
-			pg.hover.clearHoveredItem();
-			var fileNameNoExtension = fileName.split(".svg")[0];
-			var exportData = paper.project.exportSVG({ asString: true });
-			var blob = new Blob([exportData], {type: "image/svg+xml;charset=" + document.characterSet});
-			saveAs(blob, fileNameNoExtension+'.svg');
-		}
-	};
-	
-	
-	var exportAndPromptJSON = function() {
+	var saveJSONDocument = function() {
 		var fileName = prompt("Name your file", "export.json");
 
 		if (fileName !== null) {
@@ -128,35 +78,6 @@ pg.document = function() {
 	};
 	
 	
-	var exportAndPromptImage = function() {
-		var fileName = prompt("Name your file", "export.png");
-
-		if (fileName !== null) {
-			pg.hover.clearHoveredItem();
-			var fileNameNoExtension = fileName.split(".png")[0];
-			canvas.toBlob(function(blob) {
-				saveAs(blob, fileNameNoExtension+'.png');
-			});
-		}
-	};
-	
-	
-	var getAllItems = function() {
-		var allItems = [];
-		for(var i=0; i<paper.project.layers.length; i++) {
-			var layer = paper.project.layers[i];
-			for(var j=0; j<layer.children.length; j++) {
-				var child = layer.children[j];
-				// don't give guides back
-				if(child.guide) {
-					continue;
-				}
-				allItems.push(child);
-			}
-		}
-		return allItems;
-	};
-	
 	
 	return {
 		getCenter: getCenter,
@@ -165,13 +86,8 @@ pg.document = function() {
 		getClipboard: getClipboard,
 		pushClipboard: pushClipboard,
 		clearClipboard: clearClipboard,
-		importAndAddImage: importAndAddImage,
-		importAndAddSVG: importAndAddSVG,
-		importAndAddJSON: importAndAddJSON,
-		exportAndPromptSVG: exportAndPromptSVG,
-		exportAndPromptJSON: exportAndPromptJSON,
-		exportAndPromptImage: exportAndPromptImage,
-		getAllItems: getAllItems
+		loadJSONDocument: loadJSONDocument,
+		saveJSONDocument: saveJSONDocument
 	};
 		
 }();

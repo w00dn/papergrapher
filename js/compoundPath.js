@@ -7,6 +7,14 @@ pg.compoundPath = function() {
 		return item.className === 'CompoundPath';
 	};
 	
+	var isCompoundPathChild = function(item) {
+		if(item.parent) {
+			return item.parent.className === 'CompoundPath';
+		} else {
+			return false;
+		}
+	};
+	
 	
 	var getItemsCompoundPath = function(item) {
 		var itemParent = item.parent;
@@ -24,7 +32,7 @@ pg.compoundPath = function() {
 		var items = pg.selection.getSelectedPaths();
 		if(items.length < 2) return;
 		
-		var path = new CompoundPath();
+		var path = new paper.CompoundPath({fillRule: 'evenodd'});
 		
 		for(var i=0; i<items.length; i++) {
 			path.addChild(items[i]);
@@ -63,7 +71,6 @@ pg.compoundPath = function() {
 		}
 		
 		for(var j=0; j<cPathsToDelete.length; j++) {
-			//console.log('ohai delete', cPathsToDelete[j]);
 			cPathsToDelete[j].remove();
 		}
 		pg.undo.snapshot('releaseCompoundPath');
@@ -72,6 +79,7 @@ pg.compoundPath = function() {
 	
 	return {
 		isCompoundPath: isCompoundPath,
+		isCompoundPathChild: isCompoundPathChild,
 		getItemsCompoundPath: getItemsCompoundPath,
 		createFromSelection: createFromSelection,
 		releaseSelection: releaseSelection,

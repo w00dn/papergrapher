@@ -6,8 +6,7 @@ pg.tools.detailSelect = function() {
 	var tool;
 	
 	var options = {
-		name: 'DetailSelect',
-		type: 'toolbar'
+		name: 'DetailSelect'
 	};
 	
 
@@ -55,7 +54,7 @@ pg.tools.detailSelect = function() {
 			
 			hitType = null;
 			pg.hover.clearHoveredItem();
-			var hitResult = project.hitTest(event.point, hitOptions);
+			var hitResult = paper.project.hitTest(event.point, hitOptions);
 			if (!hitResult) {
 				if (!event.modifiers.shift) {
 					pg.selection.clearSelection();
@@ -87,7 +86,7 @@ pg.tools.detailSelect = function() {
 					if(event.modifiers.shift) {
 						hitResult.item.fullySelected = true;
 					} else {
-						project.deselectAll();
+						paper.project.deselectAll();
 						hitResult.item.fullySelected = true;
 
 
@@ -109,7 +108,7 @@ pg.tools.detailSelect = function() {
 					if(event.modifiers.shift) {
 						hitResult.segment.selected = true;
 					} else {
-						project.deselectAll();
+						paper.project.deselectAll();
 						hitResult.segment.selected = true;
 					}
 				}
@@ -127,7 +126,7 @@ pg.tools.detailSelect = function() {
 					curve.selected = !curve.selected;
 
 				} else if(!curve.selected) {
-					project.deselectAll();
+					paper.project.deselectAll();
 					curve.selected = true;
 				}
 
@@ -139,7 +138,7 @@ pg.tools.detailSelect = function() {
 				hitType = hitResult.type;
 
 				if(!event.modifiers.shift) {
-					project.deselectAll();
+					paper.project.deselectAll();
 				}
 				
 				hitResult.segment.handleIn.selected = true;
@@ -167,7 +166,7 @@ pg.tools.detailSelect = function() {
 				doRectSelection = false;
 				selectionDragged = true;
 				
-				var selectedItems = project.selectedItems;
+				var selectedItems = pg.selection.getSelectedItems();
 				var dragVector = (event.point - event.downPoint);
 				
 				for(var i=0; i < selectedItems.length; i++) {

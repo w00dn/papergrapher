@@ -7,7 +7,7 @@ pg.layer = function() {
 	
 	
 	var deselectAllLayers = function() {
-		var selectedItems = paper.project.selectedItems;
+		var selectedItems = pg.selection.getSelectedItems();
 		
 		// first deselect layer
 		for(var i=0; i<selectedItems.length; i++) {

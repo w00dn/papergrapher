@@ -17,7 +17,7 @@ pg.tools.viewGrab = function() {
 		
 		tool.onMouseDown = function(event) {
 			if(event.event.button > 0) return; // only first mouse button
-			lastPoint = view.projectToView(event.point);
+			lastPoint = paper.view.projectToView(event.point);
 			setCursor('grabbing'); 
 		};
 		
@@ -29,9 +29,9 @@ pg.tools.viewGrab = function() {
 			// dragging, we need to convert coordinates to view space,
 			// and then back to project space after the view space has
 			// changed.
-			var point = view.projectToView(event.point);
-			var  last = view.viewToProject(lastPoint);
-			view.scrollBy(last.subtract(event.point));
+			var point = paper.view.projectToView(event.point);
+			var  last = paper.view.viewToProject(lastPoint);
+			paper.view.scrollBy(last.subtract(event.point));
 			lastPoint = point;
 		};
 		
@@ -63,12 +63,12 @@ pg.tools.viewGrab = function() {
 	
 	
 	var setCursor = function(cursorString) {
-		var body = $('body');
-		body.removeClass('grab');
-		body.removeClass('grabbing');
+		var $body = jQuery('body');
+		$body.removeClass('grab');
+		$body.removeClass('grabbing');
 		
 		if(cursorString && cursorString.length > 0) {
-			body.addClass(cursorString);
+			$body.addClass(cursorString);
 		}
 	};
 	

@@ -15,8 +15,14 @@ pg.view = function() {
 	};
 	
 	
+	var resetPan = function() {
+		paper.view.center = pg.document.getCenter();
+	};
+	
+	
 	return {
 		zoomBy: zoomBy,
-		resetZoom: resetZoom
+		resetZoom: resetZoom,
+		resetPan: resetPan
 	};
 }();

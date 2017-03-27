@@ -4,49 +4,49 @@ pg.style = function() {
 	var colorsAreDefault = true;
 
 	var getFillColor = function() {
-		var value = $("#fillColorInput").spectrum("get");
+		var value = jQuery("#fillColorInput").spectrum("get");
 		return value ? value.toRgbString() : null;
 	};
 
 
 	var getStrokeColor = function() {
-		var value = $("#strokeColorInput").spectrum("get");
+		var value = jQuery("#strokeColorInput").spectrum("get");
 		return value ? value.toRgbString() : null;
 	};
 	
 	
 	var getOpacity = function() {
-		var value = $('#opacityInput').val();
+		var value = jQuery('#opacityInput').val();
 		return value ? value/100 : null;
 	};
 	
 	
 	var getBlendMode = function() {
-		var value = $('#blendModeSelect').val();
+		var value = jQuery('#blendModeSelect').val();
 		return value ? value : null;
 	};
 	
 	
 	var getStrokeWidth = function() {
-		var value = $('#strokeInput').val();
+		var value = jQuery('#strokeInput').val();
 		return value ? parseFloat(value) : null;
 	};
 	
 	
 	var getFontFamily = function() {
-		var value = $('#fontFamilySelect').val();
+		var value = jQuery('#fontFamilySelect').val();
 		return value ? value : 'sans-serif';
 	};
 	
 	
 	var getFontWeight = function() {
-		var value = $('#fontWeightSelect').val();
+		var value = jQuery('#fontWeightSelect').val();
 		return value ? value : null;
 	};
 	
 	
 	var getFontSize = function() {
-		var value = $('#fontSizeSelect').val();
+		var value = jQuery('#fontSizeSelect').val();
 		return value ? parseFloat(value) : null;
 	};
 
@@ -57,37 +57,37 @@ pg.style = function() {
 	
 	
 	var setFillColor = function(color) {
-		$("#fillColorInput").spectrum("set", color);
+		jQuery("#fillColorInput").spectrum("set", color);
 	};
 	
 	
 	var setStrokeColor = function(color) {
-		$("#strokeColorInput").spectrum("set", color);
+		jQuery("#strokeColorInput").spectrum("set", color);
 	};
 	
 	
 	var setOpacity = function(value, triggerChange) {
-		var input = $('#opacityInput');
+		var $input = jQuery('#opacityInput');
 		if(value !== null) {
-			input.val(value*100);
+			$input.val(value*100);
 		} else {
-			input.val('');
+			$input.val('');
 		}
 		if(triggerChange) {
-			input.trigger('change').blur();
+			$input.trigger('change').blur();
 		} else {
-			input.blur();
+			$input.blur();
 		}
 	};
 	
 	
 	var setBlendMode = function(mode) {
-		var select = $('#blendModeSelect');
+		var $select = jQuery('#blendModeSelect');
 		
 		if(mode !== null) {
-			select.val(mode);
+			$select.val(mode);
 		} else {
-			select.val('');
+			$select.val('');
 		}
 		
 	};
@@ -95,27 +95,27 @@ pg.style = function() {
 	
 	var setStrokeWidth = function(value, triggerChange) {
 		//console.log('settin stroke to:', value);
-		var input = $('#strokeInput');
-		input.val(value);
+		var $input = jQuery('#strokeInput');
+		$input.val(value);
 		
 		if(triggerChange) {
-			input.trigger('change').blur();
+			$input.trigger('change').blur();
 		}
 	};
 	
 	
 	var setFontFamily = function(value) {
-		$('#fontFamilySelect').val(value);
+		jQuery('#fontFamilySelect').val(value);
 	};
 	
 	
 	var setFontWeight = function(value) {
-		$('#fontWeightSelect').val(value);
+		jQuery('#fontWeightSelect').val(value);
 	};
 	
 	
 	var setFontSize = function(value) {
-		$('#fontSizeSelect').val(value);
+		jQuery('#fontSizeSelect').val(value);
 	};
 
 	
@@ -148,7 +148,7 @@ pg.style = function() {
 	
 	
 	var updateFromSelection = function() {
-		var selectedItems = paper.project.selectedItems;
+		var selectedItems = pg.selection.getSelectedItems();
 		var selectionFillColorString = null;
 		var selectionStrokeColorString = null;
 		var selectionOpacity = null;
@@ -260,7 +260,6 @@ pg.style = function() {
 		item.fontWeight = getFontWeight();
 		item.fontSize = getFontSize();
 		item.leading = getFontSize();
-//		item.leading = getFontSize()*1.5;
 		return item;
 	};
 
@@ -274,8 +273,8 @@ pg.style = function() {
 		var currFillColorString = getFillColor(true);
 		var currStrokeColorString = getStrokeColor(true);
 
-		$('#strokeColorInput').spectrum("set", currFillColorString);
-		$('#fillColorInput').spectrum("set", currStrokeColorString);
+		jQuery('#strokeColorInput').spectrum("set", currFillColorString);
+		jQuery('#fillColorInput').spectrum("set", currStrokeColorString);
 
 		pg.selection.colorizeSelectedFill(currStrokeColor);
 		pg.selection.colorizeSelectedStroke(currFillColor);
@@ -289,11 +288,11 @@ pg.style = function() {
 	var sanitizeSettings = function() {
 		// if a tool is selected and the opacity value is empty, set it to 1
 		// otherwise the user draws something with opacity 0 and sees nothing
-		var opacity = $('#opacityInput').val();
+		var opacity = jQuery('#opacityInput').val();
 		if(opacity === "") {
 			setOpacity(1);
 		}
-		var blendMode = $('#blendModeSelect').val();
+		var blendMode = jQuery('#blendModeSelect').val();
 		if(blendMode === "") {
 			setBlendMode('normal');
 		}
@@ -322,7 +321,7 @@ pg.style = function() {
 	
 	
 	var blurInputs = function() {
-		$('input, select, textarea, button').blur();
+		jQuery('input, select, textarea, button').blur();
 	};
 	
 	

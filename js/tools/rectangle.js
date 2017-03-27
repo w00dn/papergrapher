@@ -5,7 +5,6 @@ pg.tools.rectangle = function() {
 
 	var options = {
 		name: 'Rectangle',
-		type: 'toolbar',
 		roundedCorners: false,
 		cornerRadius: 20
 	};
@@ -16,9 +15,10 @@ pg.tools.rectangle = function() {
 			label: 'Rounded corners'
 		},
 		cornerRadius: {
-			type: 'number',
-			label: 'showOnRoundedCorners::Corner radius',
-			step: 1
+			type: 'float',
+			label: 'Corner radius',
+			requirements: {roundedCorners : true},
+			min: 0
 		}
 	};
 	
@@ -28,17 +28,32 @@ pg.tools.rectangle = function() {
 		options = pg.tools.getLocalOptions(options);
 		
 		tool = new Tool();
+		var mouseDown;
+		var path;
+		var rect;
+		
+		tool.onMouseDown = function(event) {
+			mouseDown = event.downPoint;
+		};
+		
 		
 		tool.onMouseDrag = function(event) {
 			if(event.event.button > 0) return;  // only first mouse button
+
+			rect = new Rectangle(event.downPoint, event.point);
 			
-			var rect = new Rectangle(event.downPoint, event.point);
-			var path;
+			if(event.modifiers.shift) {
+				rect.height = rect.width;
+			}
 			
 			if(options.roundedCorners) {
 				path = new Path.Rectangle(rect, options.cornerRadius);
 			} else {
 				path = new Path.Rectangle(rect);
+			}
+			
+			if(event.modifiers.alt) {
+				path.position = mouseDown;
 			}
 			
 			path = pg.style.applyActiveToolbarStyle(path);
@@ -53,31 +68,15 @@ pg.tools.rectangle = function() {
 			pg.undo.snapshot('rectangle');	
 		};
 		
-		var palette = new Palette('Options', components, options);
-		palette.onChange = function(component, name, value) {
-			updateTool();
-		};
+		// setup floating tool options panel in the editor
+		pg.toolOptionPanel.setup(options, components, function(){});
 		
 		tool.activate();
 	};
 
-	
-	var updateTool = function() {
-		
-		if(options.roundedCorners === true) {
-			$('.showOnRoundedCorners').show();
-		} else {
-			$('.showOnRoundedCorners').hide();
-		}
-		
-		// write the options to jStorage when a value changes
-		pg.tools.setLocalOptions(options);
-		
-	};
-	
+
 	return {
 		options: options,
-		activateTool : activateTool,
-		updateTool: updateTool
+		activateTool : activateTool
 	};
 };

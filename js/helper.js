@@ -28,21 +28,21 @@ pg.helper = function() {
 			case 'gif':
 			case 'png':
 				//etc
-				console.log('Image',file);
+				//console.log('Image',file);
 				return true;
 			}
 			
 		} else if(fType === 'SVG') {
 			switch (ext.toLowerCase()) {
 			case 'svg':
-				console.log('SVG',file);
+				//console.log('SVG',file);
 				return true;
 			}
 			
 		} else if(fType === 'JSON') {
 			switch (ext.toLowerCase()) {
 			case 'json':
-				console.log('JSON',file);
+				//console.log('JSON',file);
 				return true;
 			}
 			
@@ -56,109 +56,71 @@ pg.helper = function() {
 		var parts = filename.split('.');
 		return parts[parts.length - 1];
 	};
+
 	
-	
-	// svg imported items need applyMatrix = true or strange stuff will happen
-	// when transforming them with the tools
-	var applyMatrixToItems = function(items) {
-		for(var i=0; i<items.length; i++) {
-			var item = items[i];
-			item.applyMatrix = true;
-			if(pg.group.isGroup(item) || pg.layer.isLayer(item)) {
-				if(item.children && item.children.length > 0) {
-					applyMatrixToItems(item.children);
+	var getAllPaperItems = function(includeGuides) {
+		includeGuides = includeGuides || false;
+		var allItems = [];
+		for(var i=0; i<paper.project.layers.length; i++) {
+			var layer = paper.project.layers[i];
+			for(var j=0; j<layer.children.length; j++) {
+				var child = layer.children[j];
+				// don't give guides back
+				if(!includeGuides && child.guide) {
+					continue;
 				}
+				allItems.push(child);
 			}
 		}
+		return allItems;
 	};
 	
 	
-	// i have no idea what i'm doing, but here we go...
-	var switchHandle = function(seg, mode) {
-		
-		// simplest first, when we have a mode and its linear
-		if(mode === 'linear') {
-			console.log('setLinear');
-			seg.linear = true;
-			return;
-		}
-		
-		// segment is linear or mode=smooth and has both neighbour segments
-		if((mode === 'smooth' || seg.linear) && seg.next && seg.previous) {
-			seg.linear = true; // reset to linear before smoothing
-			
-			// get angle between previous and next segment
-			var cornerAngle = (
-				(seg.previous.point - seg.point).angle - 
-				(seg.next.point - seg.point).angle
-			);
-			// convert angle to 360°-type angle for less brain hurt
-			if(cornerAngle < 0) {
-				cornerAngle += 360;
-			}
-			// calculate tangent angle of segment/corner
-			var tangAngle = (180-cornerAngle)*0.5;
-
-			// get shorter dist to neigbour points and max it with
-			// 20 elefants, then use it to normalize the handleSize
-			var nextDist = (seg.next.point - seg.point).length;
-			var prevDist = (seg.previous.point - seg.point).length;
-			var shorterDist = nextDist;
-			if(nextDist > prevDist) shorterDist = prevDist;
-			shorterDist *= 0.3;
-			if(shorterDist > 20) shorterDist = 20;
-
-			//create handle vector to next point and normalize it
-			var offset = (seg.next.point - seg.point).normalize(shorterDist);
-
-			// then rotate that handle vector by the tangentAngle
-			var rotOffset = offset.rotate(-tangAngle, 0);
-
-			// and apply the whole thing to the handles
-			seg.handleOut = rotOffset;
-			seg.handleIn = -rotOffset;
-
-			// can't believe this worked...
-		
-		
-		// segment is linear or mode=smooth and has not both neighbours
-		} else if(mode === 'smooth' || seg.linear) {
-			seg.linear = true; // reset to linear before smoothing
-			
-			// handle end points differently since they don't have
-			// a corner to start from
-			if(seg.next) {
-				var handleDist = (seg.point - seg.next.point).length;
-				handleDist *= 0.3;
-				if(handleDist > 20) handleDist = 20;
-
-				var vec = (seg.point - seg.next.point).normalize(handleDist);
-				seg.handleIn = vec;
-				seg.handleOut = -vec;
-
-			} else if(seg.previous) {
-				var handleDist = (seg.point - seg.previous.point).length;
-				handleDist *= 0.3;
-				if(handleDist > 20) handleDist = 20;
-
-				var vec = (seg.point - seg.previous.point).normalize(handleDist);
-				seg.handleIn = -vec;
-				seg.handleOut = vec;
-			}
-
-		} else {
-			// i wish everything would be this easy
-			seg.linear = true;
-		}
-
+	var getPaperItemsByTags = function(tags) {
+		var allItems = getAllPaperItems(true);
+		var foundItems = [];
+		jQuery.each(allItems, function(index, item) {
+			jQuery.each(tags, function(ti, tag) {
+				if(item[tag] && foundItems.indexOf(item) == -1) {
+					foundItems.push(item);
+				}
+			});
+		});
+		return foundItems;
+	};
+	
+	
+	var removePaperItemsByDataTags = function(tags) {
+		var allItems = getAllPaperItems(true);
+		jQuery.each(allItems, function(index, item) {
+			jQuery.each(tags, function(ti, tag) {
+				if(item.data && item.data[tag]) {
+					item.remove();
+				}
+			});
+		});
+	};
+	
+	
+	var removePaperItemsByTags = function(tags) {
+		var allItems = getAllPaperItems(true);
+		jQuery.each(allItems, function(index, item) {
+			jQuery.each(tags, function(ti, tag) {
+				if(item[tag]) {
+					item.remove();
+				}
+			});
+		});
 	};
 	
 	
 	return {
 		selectedItemsToJSONString: selectedItemsToJSONString,
 		checkFileType: checkFileType,
-		applyMatrixToItems: applyMatrixToItems,
-		switchHandle: switchHandle
+		getAllPaperItems: getAllPaperItems,
+		getPaperItemsByTags: getPaperItemsByTags,
+		removePaperItemsByDataTags: removePaperItemsByDataTags,
+		removePaperItemsByTags: removePaperItemsByTags
 	};
 	
 }();

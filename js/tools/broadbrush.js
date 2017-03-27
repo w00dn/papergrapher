@@ -9,31 +9,39 @@ pg.tools.broadBrush = function() {
 	var options = {
 		name: 'BroadBrush',
 		type: 'toolbar',
-		pointDistance: 40,
+		pointDistance: 20,
 		brushWidth: 60,
 		strokeEnds: 6,
-		endLength: 30,
-		endType: 'smooth'
+		endLength: 7,
+		endVariation: 2,
+		endType: 'slime'
 	};
 	
 	var components = {
 		pointDistance: {
-			type: 'number',
+			type: 'int',
 			label: 'Point distance',
-			step: 1
+			min: 1
 		},
 		brushWidth: {
-			type: 'number',
+			type: 'float',
 			label: 'Brush width',
-			step: 1
+			min: 0
 		},
 		strokeEnds: {
-			type: 'number',
-			label: 'Stroke ends'
+			type: 'int',
+			label: 'Stroke ends',
+			min: 0
 		},
 		endLength: {
-			type: 'number',
-			label: 'Ends length'
+			type: 'float',
+			label: 'Ends length',
+			min: 0
+		},
+		endVariation: {
+			type: 'float',
+			label: 'Ends variation',
+			min: 0
 		},
 		endType: {
 			type: 'list',
@@ -47,7 +55,6 @@ pg.tools.broadBrush = function() {
 		
 		// get options from local storage if present
 		options = pg.tools.getLocalOptions(options);
-		
 		tool = new Tool();
 
 		tool.fixedDistance = options.pointDistance;
@@ -66,7 +73,8 @@ pg.tools.broadBrush = function() {
 			
 			// If this is the first drag event,
 			// add the strokes at the start:
-			if(event.count === 1) {
+			//console.log(event.count);
+			if(event.count == 0) {
 				addStrokes(event.middlePoint, event.delta * -1);
 			} else {
 				var step = (event.delta).normalize(options.brushWidth/2);
@@ -99,10 +107,10 @@ pg.tools.broadBrush = function() {
 						var ind = strokeIndices[j];
 						if(ind.index === seg.index) {
 							if(options.endType === 'slime') {
-								pg.helper.switchHandle(seg, 'smooth');
+								pg.geometry.switchHandle(seg, 'smooth');
 								
 							} else if(options.endType === 'linear') {
-								pg.helper.switchHandle(seg, 'linear');
+								pg.geometry.switchHandle(seg, 'linear');
 							}
 						}
 					}
@@ -115,11 +123,10 @@ pg.tools.broadBrush = function() {
 
 		};
 		
-		// palette stuff
-		var palette = new Palette('Options', components, options);		
-		palette.onChange = function(component, name, value) {
-			updateTool();
-		};
+		// setup floating tool options panel in the editor
+		pg.toolOptionPanel.setup(options, components, function() {
+			tool.fixedDistance = options.pointDistance;
+		});
 		
 		tool.activate();
 	};
@@ -133,7 +140,12 @@ pg.tools.broadBrush = function() {
 		step /= strokePoints - 1;
 		for(var i = 0; i < strokePoints; i++) {
 			var strokePoint = point + step * i;
-			var offset = delta.normalize(options.endLength) * (Math.random() * 0.3 + 0.1);
+			var offset;
+			if(options.endVariation > 0) {
+				offset = delta.normalize(options.endLength) * (Math.random() * options.endVariation + 0.1);
+			} else {
+				offset = delta.normalize(options.endLength);
+			}
 			if(i % 2) {
 				offset *= -1;
 			}
@@ -144,22 +156,13 @@ pg.tools.broadBrush = function() {
 			if(options.endType === 'slime' || options.endType === 'linear') {
 				strokeIndices.push(path.firstSegment);
 			}
-			
 		}
-	};
-	
-	
-	var updateTool = function() {
-		tool.fixedDistance = options.pointDistance;
-		// write the options to jStorage when a value changes
-		pg.tools.setLocalOptions(options);
 	};
 	
 	
 	return {
 		options: options,
-		activateTool : activateTool,
-		updateTool: updateTool
+		activateTool : activateTool
 	};
 	
 };

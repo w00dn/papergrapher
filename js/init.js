@@ -1,6 +1,5 @@
 // functions related to initializing pg
 
-// root namespace
 var pg = function() {
 	
 	var init = function() {
@@ -9,6 +8,8 @@ var pg = function() {
 		pg.settings.setup();
 		
 		pg.document.setup();
+		
+		pg.export.setup();
 
 		pg.menu.setup();
 
@@ -30,10 +31,14 @@ var pg = function() {
 	
 }();
 
-
-paper.install(window);
-
 // set pg up on window load
-$( window ).load(function() {
+jQuery( window ).load(function() {
 	pg.init();
+	
+	// fade out loading screen and reveal ui
+	jQuery('#loadingScreen').addClass('disabled').on('transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd',
+		function () {
+			jQuery(this).remove();
+		});
+	;
 });

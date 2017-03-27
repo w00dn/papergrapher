@@ -9,21 +9,21 @@ pg.toolbar = function() {
 				
 		// setup tool icons and click functions
 		
-		$('.tool').each(function(index, value) {
-			$(this).click(function() {
-				var toolName = $(this).data('name');
+		jQuery('.tool').each(function(index, value) {
+			jQuery(this).click(function() {
+				var toolName = jQuery(this).data('name');
 				if(toolName && toolName.length > 0) {
 					switchTool(pg.tools.newToolByName(toolName));
 				} else {
 					console.log('tool not found. check data-name attribute');
 				}
 			});
-			$(this).css({
-				'background-image': 'url(assets/tool_'+$(this).data('name')+'.svg)'
+			jQuery(this).css({
+				'background-image': 'url(assets/tool_'+jQuery(this).data('name')+'.svg)'
 			});
 		});
 		
-		$('#zoomSelect').change(function() {
+		jQuery('#zoomSelect').change(function() {
 			paper.view.zoom = this.value;
 			updateZoom();
 			this.value = '';
@@ -40,7 +40,7 @@ pg.toolbar = function() {
 			if(paper.tools.length > 0) {
 				paper.tools[0].remove(); // remove default tool
 			}
-			switchTool(pg.tools.newToolByName('Select'));
+			setDefaultTool();
 		},300);
 		
 				
@@ -52,7 +52,7 @@ pg.toolbar = function() {
 		
 	var setupColorPicker = function() {
 		
-		$("#fillColorInput").spectrum({
+		jQuery("#fillColorInput").spectrum({
 			color: null,
 			allowEmpty:true,
 			replacerClassName: "fillColorSpec",
@@ -71,7 +71,7 @@ pg.toolbar = function() {
 				showInputBlocker(true);
 			},
 			change: function(color) {
-				if($('.fillSpecContainer:visible')) {
+				if(jQuery('.fillSpecContainer:visible')) {
 					var stringColor = color ? color.toRgbString() : "";
 					pg.selection.colorizeSelectedFill(stringColor);
 					showInputBlocker(false);
@@ -84,14 +84,14 @@ pg.toolbar = function() {
 			}
 		});
 		
-		$('.fillSpecContainer .sp-choose').click(function() {
+		jQuery('.fillSpecContainer .sp-choose').click(function() {
 			pg.selection.colorizeSelectedFill(pg.style.getFillColor());
 			showInputBlocker(false);
 		});
 		
-		$('.fillColorSpec').attr('title', 'Fill color');
+		jQuery('.fillColorSpec').attr('title', 'Fill color');
 
-		$("#strokeColorInput").spectrum({
+		jQuery("#strokeColorInput").spectrum({
 			color: "#000",
 			allowEmpty:true,
 			replacerClassName: "strokeColorSpec",
@@ -110,7 +110,7 @@ pg.toolbar = function() {
 				showInputBlocker(true);
 			},
 			change: function(color) {
-				if($('.strokeSpecContainer:visible')) {
+				if(jQuery('.strokeSpecContainer:visible')) {
 					var stringColor = color ? color.toRgbString() : ""; 
 					pg.selection.colorizeSelectedStroke(stringColor);
 					showInputBlocker(false);
@@ -123,17 +123,17 @@ pg.toolbar = function() {
 			}
 		});
 
-		$('.strokeColorSpec').append('<div class="inner"></div>');
+		jQuery('.strokeColorSpec').append('<div class="inner"></div>');
 		
-		$('.strokeSpecContainer .sp-choose').click(function() {
+		jQuery('.strokeSpecContainer .sp-choose').click(function() {
 			pg.selection.colorizeSelectedStroke(pg.style.getStrokeColor());
 			showInputBlocker(false);
 		});
 		
-		$('.strokeColorSpec').attr('title', 'Stroke color');
+		jQuery('.strokeColorSpec').attr('title', 'Stroke color');
 		
 		
-		$('#colorSwitchButton').click(function() {
+		jQuery('#colorSwitchButton').click(function() {
 			pg.style.switchColors();
 		});
 
@@ -141,15 +141,15 @@ pg.toolbar = function() {
 	
 
 	var showToolbar = function() {
-		$('#toolbar').css({'left':'-150px'}).show().animate({'left': '0px'}, 'slow');
+		
 	};
 	
 	
 	var showInputBlocker = function(state) {
 		if(state) {
-			$('#colorInputBlocker').show();
+			jQuery('#colorInputBlocker').show();
 		} else {
-			$('#colorInputBlocker').hide();
+			jQuery('#colorInputBlocker').hide();
 		}
 	};
 	
@@ -181,46 +181,10 @@ pg.toolbar = function() {
 		pg.style.sanitizeSettings();
 		tool.activateTool();
 		activeTool = tool;
-		$('.tool_'+tool.options.name+'').addClass('active');
-		
-		var palettePanel = $('.palettejs-panel');
-		if(palettePanel.exists()) {
-			palettePanel.draggable();
-			
-			if(paletteHasChangeableInput()) {
-				// add tool reset button to panel.
-				// this clears the jStorage for the current tool and reloads that
-				// tool by switching to it again.
-				var resetButton = $('<button>Reset</button>').click(function() {
-					if(confirm('Reset tool options to default?')) {
-						pg.tools.deleteLocalOptions(tool.options.name);
-						switchTool(pg.tools.newToolByName(tool.options.name), true);
-
-					}
-				});
-				palettePanel.append(resetButton);
-				pg.tools.parseOptionLabels();
-
-				try {
-					tool.updateTool();
-				} catch(e) {
-					// tool has no updateTool
-				}
-			}
-		}
+		jQuery('.tool_'+tool.options.name+'').addClass('active');
 	};
 	
-	// checks if a palette has changeable elements (input, textarea, checkbox, ...)
-	// ignores input type=button since that is not changeable
-	var paletteHasChangeableInput = function() {
-		if($('.palettejs-panel input:not([type=button])').size() > 0) {
-			return true;
-		} else {
-			return false;
-		}
-	};
-
-
+	
 	var resetTools = function() {
 		if(activeTool !== undefined && activeTool !== null) {
 			try {
@@ -232,14 +196,19 @@ pg.toolbar = function() {
 				paper.tools[i].remove();
 			}
 		}
-		$('.palettejs-panel').remove();
-		$('.tool').removeClass('active');
+		jQuery('.palettejs-panel').remove();
+		jQuery('.tool').removeClass('active');
 		
 	};
-
+	
+	
+	var setDefaultTool = function() {
+		switchTool(pg.tools.newToolByName('Select'));
+	};
+	
 	
 	var updateZoom = function() {
-		$('#zoomInput').val(Math.round(paper.view.zoom*100));
+		jQuery('#zoomInput').val(Math.round(paper.view.zoom*100));
 	};
 	
 
@@ -249,7 +218,8 @@ pg.toolbar = function() {
 		getPreviousTool: getPreviousTool,
 		switchTool: switchTool,
 		resetTools: resetTools,
-		updateZoom: updateZoom,
+		setDefaultTool: setDefaultTool,
+		updateZoom: updateZoom
 	};
 	
 }();

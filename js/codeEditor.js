@@ -2,18 +2,18 @@
 pg.codeEditor = function(){
 	
 	var setup = function() {
-		$('#runScriptButton').click(function() {
+		jQuery('#runScriptButton').click(function() {
 			cleanup();
 			runScript();
 		});
 		
-		$('#closeScriptButton').click(function() {
+		jQuery('#closeScriptButton').click(function() {
 			cleanup();
-			$('#codeEditorContainer').hide();
+			jQuery('#codeEditorContainer').hide();
 		});
 		
-		$('#clearConsoleButton').click(function() {
-			$('#consoleOutput').empty();
+		jQuery('#clearConsoleButton').click(function() {
+			jQuery('#consoleOutput').empty();
 		});
 
 	};
@@ -21,9 +21,9 @@ pg.codeEditor = function(){
 	
 	var show = function() {
 		if(loadEditorResources()) {
-			$('#codeEditorContainer').draggable();
-			$('#codeEditorContainer').css({'position':'absolute'});
-			$('#codeEditorContainer').show();
+			jQuery('#codeEditorContainer').draggable();
+			jQuery('#codeEditorContainer').css({'position':'absolute'});
+			jQuery('#codeEditorContainer').show();
 		
 			(function () {
 				var log = console.log;
@@ -31,7 +31,7 @@ pg.codeEditor = function(){
 					//log.call(this, 'My Console!!!');
 					var args = Array.prototype.slice.call(arguments);
 					if(args[0] !== 'key') {
-						$('#consoleOutput').append('<span class="message">' + args + '</span>').scrollTop(99999);
+						jQuery('#consoleOutput').append('<span class="message">' + args + '</span>').scrollTop(99999);
 					}
 					log.apply(this, args);
 				};
@@ -41,8 +41,8 @@ pg.codeEditor = function(){
 
 	
 	var loadEditorResources = function() {
-		if(!$('#codeEditorCSS').exists()) {
-			$("<link />", {
+		if(!jQuery('#codeEditorCSS').exists()) {
+			jQuery("<link />", {
 				href: "css/codeEditor.css",
 				rel: "stylesheet",
 				id: "codeEditorCSS"
@@ -55,7 +55,7 @@ pg.codeEditor = function(){
 		try {
 			printStackTrace();
 		} catch(error) {
-			$.getScript("js/lib/stacktrace.js")
+			jQuery.getScript("js/lib/stacktrace.js")
 			.fail(function (jqxhr, settings, exception) {
 				console.log(exception);
 				return false;
@@ -66,10 +66,10 @@ pg.codeEditor = function(){
 		try {
 			tabOverride.set();
 		} catch(error) {
-			$.getScript("js/lib/taboverride.min.js")
+			jQuery.getScript("js/lib/taboverride.min.js")
 			.done(function () {
-				$('#codeEditorArea').tabOverride(true);
-				$.fn.tabOverride.autoIndent(true);
+				jQuery('#codeEditorArea').tabOverride(true);
+				jQuery.fn.tabOverride.autoIndent(true);
 			})
 			.fail(function (jqxhr, settings, exception) {
 				console.log(exception);
@@ -82,21 +82,16 @@ pg.codeEditor = function(){
 	
 	
 	var runScript = function() {
-		var codeString = $('#codeEditorArea').val();
+		var codeString = jQuery('#codeEditorArea').val();
 		
 		try {
-			$('body').append('<script id="userScript">'+codeString+'</script>');
+			jQuery('body').append('<script id="userScript">'+codeString+'</script>');
 		} catch(error) {
 			var trace = printStackTrace({e: error});
 			var splitTrace = trace[0].split(':');
 			var lineNumber = splitTrace[splitTrace.length-2];
-			$('#consoleOutput').append('<span class="error">Line '+lineNumber+': '+error.message+'</span>');
-			//$('#consoleOutput').append('<span class="error">'+error.message+' '+error.line+'</span>').scrollTop(99999);
+			jQuery('#consoleOutput').append('<span class="error">Line '+lineNumber+': '+error.message+'</span>');
 		}
-
-		//console.log(store[0]);
-		//$('#consoleOutput').append(log);
-		
 		pg.undo.snapshot('codeEditor');
 		paper.view.update();
 
@@ -104,7 +99,7 @@ pg.codeEditor = function(){
 	
 	
 	var cleanup = function() {
-		$('#userScript').remove();
+		jQuery('#userScript').remove();
 	};
 	
 	

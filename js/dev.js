@@ -1,5 +1,5 @@
 
-$( window ).load(function() {
+jQuery(window).load(function() {
 	
 	//pg.dev.loadStats();
 
@@ -21,12 +21,13 @@ $( window ).load(function() {
 			id: 'wzd6amn'
 		}
 	});
+	
 });
 
 pg.dev = function() {
 	
 	var loadStats = function() {
-		$.getScript("js/lib/stats.min.js")
+		jQuery.getScript("js/lib/stats.min.js")
 		.done(function () {
 			var stats = new Stats();
 			stats.setMode(0); // 0: fps, 1: ms

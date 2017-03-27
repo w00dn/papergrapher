@@ -4,20 +4,26 @@ pg.tools.rotate = function() {
 	
 	var options = {
 		name: 'Rotate',
-		type: 'toolbar',
 		rotationCenter: 'selection',
-		randomSpeed: false
+		randomSpeed: false,
+		lookAt: false
 	};
 	
 	var components = {
 		rotationCenter: {
 			type: 'list',
-			label: 'Rotation center',
+			label: 'Center',
 			options: [ 'individual', 'selection', 'cursor' ]
 		},
 		randomSpeed: {
 			type: 'boolean',
-			label: 'individual::Random speed'
+			label: 'Random speed',
+			requirements: {rotationCenter: 'individual'}
+		},
+		lookAt: {
+			type: 'boolean',
+			label: 'Lookat',
+			requirements: {rotationCenter: 'individual'}
 		}
 	};
 	
@@ -31,26 +37,32 @@ pg.tools.rotate = function() {
 		var rand = [];
 		var initAngles = [];
 		var transformed = false;
+		var prevRot = [];
+		var mouseDown;
 		
 		// get options from local storage if present
 		options = pg.tools.getLocalOptions(options);
 		
 		tool = new Tool();
+		
 		// on click, we first need the angle difference between where the user
 		// clicked relative to the items/groups initial angle
 		tool.onMouseDown = function(event) {
 			transformed = false;
 			selectedItems = pg.selection.getSelectedItems();
+			mouseDown = event.point;
 			
 			if(selectedItems.length === 0) return;
-
+			
 			if(options.rotationCenter === 'individual') {
 				for(var i=0; i<selectedItems.length; i++) {
 					var item = selectedItems[i];
+					item.applyMatrix = false;
 					pivotMarker.push(pg.guides.crossPivot(item.position));
 					if(options.randomSpeed) {
 						rand.push((Size.random().width));
 					}
+					initAngles[i] = item.rotation;
 				}
 				
 				// paint rotation guide line
@@ -58,7 +70,12 @@ pg.tools.rotate = function() {
 				rotGuideMarker = pg.guides.rotPivot(event.downPoint, 'grey');
 				
 			} else {
-
+				
+				for(var i=0; i<selectedItems.length; i++) {
+					var item = selectedItems[i];
+					item.applyMatrix = true;
+				}
+				
 				// only set the fixedPivot once per tool activation/mode switch
 				// or the center point moves based on the selection bounds
 				if(!fixedGroupPivot) {
@@ -80,12 +97,8 @@ pg.tools.rotate = function() {
 				
 				for(var i=0; i<selectedItems.length; i++) {
 					var item = selectedItems[i];
-					
 					pg.item.setPivot(item, fixedGroupPivot.clone());
-
-					item.applyMatrix = true;
-					// save the angle the mouse has in relation to the item
-					initAngles.push((event.point - fixedGroupPivot).angle  - item.rotation);
+					prevRot[i] = (event.point - fixedGroupPivot).angle;
 				}
 
 				// paint pivot guide
@@ -93,7 +106,6 @@ pg.tools.rotate = function() {
 				
 				// paint rotation guide line
 				rotGuideLine = pg.guides.line(fixedGroupPivot, event.point);
-				
 			}
 		};
 		
@@ -106,16 +118,23 @@ pg.tools.rotate = function() {
 				
 				for(var i=0; i<selectedItems.length; i++) {
 					var item = selectedItems[i];
+					item.applyMatrix = false;
+					
 					
 					if((event.point - event.downPoint).length < 20) {
-						// also, the initial drag angle is determined by the first 20
-						//  units of drag (used for initial rotation fix)
+						// the initial drag angle is determined by the first 20 units
+						// of drag (used for initial rotation fix)
 						initAngles[i] = (event.point - event.downPoint).angle - item.rotation;
 					}
 					// shift snaps the rotation in 45 degree steps
 					if(event.modifiers.shift) {
 						rotAngle = Math.round(rotAngle / 45) *45;
 						item.rotation = rotAngle;
+						
+					} else if(options.lookAt) {
+						item.applyMatrix = false;
+						var ang = (event.point - item.position).angle;
+						item.rotation = ang;
 						
 					} else {
 						// rotations with random speed use item.rotate instead of
@@ -143,18 +162,21 @@ pg.tools.rotate = function() {
 								
 			} else {
 				var rotAngle = (event.point - fixedGroupPivot).angle;
-
+				
 				for(var i=0; i<selectedItems.length; i++) {
 					var item = selectedItems[i];
-					
 					// shift snaps the rotation in 45 degree steps
+					
 					if(event.modifiers.shift) {
 						rotAngle = Math.round(rotAngle / 45) *45;
+						item.applyMatrix = false;
 						item.rotation = rotAngle;
 						
 					} else {
-						item.rotation = rotAngle - initAngles[i];
+						item.rotate(rotAngle - prevRot[i]);
+
 					}
+					prevRot[i] = rotAngle;
 				}
 			}
 			transformed = true;
@@ -193,37 +215,18 @@ pg.tools.rotate = function() {
 			
 		};
 		
-		
-		// palette stuff
-		var palette = new Palette('Options', components, options);
-		
-		palette.onChange = function(component, name, value) {
-			//console.log('palette change');
+	 	// setup floating tool options panel in the editor
+		pg.toolOptionPanel.setup(options, components, function(){
 			fixedGroupPivot = null;
-			updateTool();
-		};
+		});
 		
 		tool.activate();
 	};
 
 	
-	var updateTool = function() {
-		
-		if(options.rotationCenter === 'individual') {
-			$('.individual').show();
-		} else {
-			$('.individual').hide();
-		}
-		
-		// write the options to jStorage when a value changes
-		pg.tools.setLocalOptions(options);
-	};
-
-	
 	return {
 		options:options,
-		activateTool : activateTool,
-		updateTool: updateTool
+		activateTool : activateTool
 	};
 	
 };

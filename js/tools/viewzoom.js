@@ -13,7 +13,7 @@ pg.tools.viewZoom = function() {
 	var activateTool = function() {
 		tool = new Tool();
 		
-		ePoint = view.center;
+		ePoint = paper.view.center;
 		
 		tool.onMouseMove = function(event) {
 			ePoint = event.point;
@@ -34,10 +34,8 @@ pg.tools.viewZoom = function() {
 			factor = 1 / factor;
 		}
 		
-		view.center = ePoint;
+		paper.view.center = ePoint;
 		pg.view.zoomBy(factor);
-		
-		
 	};
 	
 	

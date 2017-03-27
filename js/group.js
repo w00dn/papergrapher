@@ -3,10 +3,11 @@
 pg.group = function() {
 
 	var groupSelection = function() {
-		var group = new Group(pg.selection.getSelectedItems());
+		var group = new paper.Group(pg.selection.getSelectedItems());
 		pg.selection.clearSelection();
 		pg.selection.setItemSelection(group, true);
 		pg.undo.snapshot('groupSelection');
+		jQuery(document).trigger('Grouped');
 		return group;
 	};
 
@@ -28,40 +29,9 @@ pg.group = function() {
 		for(var j=0; j<emptyGroups.length; j++) {
 			emptyGroups[j].remove();
 		}
+		jQuery(document).trigger('Ungrouped');
 		pg.undo.snapshot('ungroupItems');
 	};
-
-
-	// ungroup items recursively (used when importing svg for example)
-//	var ungroupItemsRecursively = function(selectedItems) {
-//		
-//		// temp
-//		return;
-//		
-//		var emptyGroups = [];
-//
-//		// ungrouping groups
-//		if(isGroup(selectedItems)) {
-//			console.log(selectedItems);
-//			ungroupLoop(selectedItems, true);
-//			emptyGroups.push(selectedItems);
-//
-//		// ungrouping arrays of items/groups
-//		} else {
-//			for(var i=0; i<selectedItems.length; i++) {
-//				if(isGroup(selectedItems[i])) {
-//					ungroupLoop(selectedItems[i], true);
-//					emptyGroups.push(selectedItems[i]);
-//				}
-//			}
-//		}
-//
-//		// remove all empty groups after ungrouping
-//		for(var j=0; j<emptyGroups.length; j++) {
-//			console.log(emptyGroups[j]);
-//			//emptyGroups[j].remove();
-//		}
-//	};
 
 
 	var ungroupLoop = function(group, recursive) {
@@ -105,14 +75,13 @@ pg.group = function() {
 
 
 	var isGroup = function(item) {
-		return item.className === 'Group';
+		return item && item.className && item.className === 'Group';
 	};
 
 	
 	return {
 		groupSelection: groupSelection,
 		ungroupItems: ungroupItems,
-//		ungroupItemsRecursively: ungroupItemsRecursively,
 		getItemsGroup: getItemsGroup,
 		isGroup: isGroup
 	};

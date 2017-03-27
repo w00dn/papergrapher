@@ -5,11 +5,13 @@ pg.hover = function() {
 	var handleHoveredItem = function(hitOptions, event) {
 		var hitResult = paper.project.hitTest(event.point, hitOptions);
 		if(hitResult) {
+			if((hitResult.item.data && hitResult.item.data.noHover)) {
+				return;
+			}
 			if(hitResult !== hoveredItem) {
 				clearHoveredItem();
 			}
-			if(	hoveredItem === undefined && 
-				hitResult.item.selected === false) {
+			if(	hoveredItem === undefined && hitResult.item.selected === false) {
 				if(pg.item.isBoundsItem(hitResult.item)) {
 					hoveredItem = pg.guides.hoverBounds(hitResult);
 

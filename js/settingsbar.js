@@ -2,33 +2,21 @@
 pg.settingsbar = function() {
 	
 	var setup = function() {
-
-		
 		setupOpacitySelect();
-		
 		setupBlendSelect();
-		
 		setupStrokeSelect();
-		
 		setupFontFamilySelect();
-		
 		setupFontWeightSelect();
-		
 		setupFontSizeSelect();
-		
 		setupSwitchHandlesButton();
-		
 		setupRemoveSegmentButton();
-		
 		setupSplitPathButton();
-		
 		showSettingsBar();
-		
 	};
 	
 	
 	var setupOpacitySelect = function() {
-		$('#opacityInput').on('input change propertychange paste', function() {
+		jQuery('#opacityInput').on('input change propertychange paste', function() {
 			var opacity = pg.style.getOpacity();
 			// check against null because opacity can be 0 and 0 is somehow
 			// converted to null...
@@ -37,7 +25,7 @@ pg.settingsbar = function() {
 			}
 		});
 		
-		$('#opacitySelect').on('change', function() {
+		jQuery('#opacitySelect').on('change', function() {
 			pg.style.setOpacity(this.value/100, true);
 			this.value = '';
 		});
@@ -45,7 +33,7 @@ pg.settingsbar = function() {
 	
 	
 	var setupBlendSelect = function() {
-		$('#blendModeSelect').on('change', function() {
+		jQuery('#blendModeSelect').on('change', function() {
 			var mode = this.value;
 			pg.selection.setBlendMode(mode);
 		});
@@ -53,12 +41,12 @@ pg.settingsbar = function() {
 	
 	
 	var setupStrokeSelect = function() {
-		$('#strokeInput').on('input change propertychange paste', function() {
+		jQuery('#strokeInput').on('input change propertychange paste', function() {
 			pg.selection.setStrokeWidth(this.value);
 			paper.view.update();
 		}).blur();
 		
-		$('#increaseStrokeWidthButton').click(function(event) {
+		jQuery('#increaseStrokeWidthButton').click(function(event) {
 			var currentStrokeWidth = parseFloat(pg.style.getStrokeWidth());
 			var bonus = 0;
 			if(event.shiftKey) {
@@ -71,7 +59,7 @@ pg.settingsbar = function() {
 			}
 		});
 		
-		$('#decreaseStrokeWidthButton').click(function(event) {
+		jQuery('#decreaseStrokeWidthButton').click(function(event) {
 			var currentStrokeWidth = parseFloat(pg.style.getStrokeWidth());
 			var bonus = 0;
 			if(event.shiftKey) {
@@ -92,7 +80,7 @@ pg.settingsbar = function() {
 	
 	
 	var setupFontFamilySelect = function() {
-		$('#fontFamilySelect').on('change', function() {
+		jQuery('#fontFamilySelect').on('change', function() {
 			var value = this.value;
 			pg.selection.setFontFamily(value);
 		});
@@ -100,7 +88,7 @@ pg.settingsbar = function() {
 	
 	
 	var setupFontWeightSelect = function() {
-		$('#fontWeightSelect').on('change', function() {
+		jQuery('#fontWeightSelect').on('change', function() {
 			var value = this.value;
 			pg.selection.setFontWeight(value);
 		});
@@ -108,7 +96,7 @@ pg.settingsbar = function() {
 	
 	
 	var setupFontSizeSelect = function() {
-		$('#fontSizeSelect').on('change', function() {
+		jQuery('#fontSizeSelect').on('change', function() {
 			var value = this.value;
 			pg.selection.setFontSize(value);
 		});
@@ -116,65 +104,63 @@ pg.settingsbar = function() {
 	
 	
 	var setupSwitchHandlesButton = function() {
-		$('#switchHandlesButton').click(function() {
+		jQuery('#switchHandlesButton').click(function() {
 			pg.selection.switchSelectedHandles();
 		});
 	};
 	
 	
 	var setupRemoveSegmentButton = function() {
-		$('#removeSegmentButton').click(function() {
+		jQuery('#removeSegmentButton').click(function() {
 			pg.selection.removeSelectedSegments();
 		});	
 	};
 	
 	
 	var setupSplitPathButton = function() {
-		$('#splitPathButton').click(function() {
+		jQuery('#splitPathButton').click(function() {
 			pg.selection.splitPathAtSelectedSegments();
 		});
 	};
 	
 	
 	var showSettingsBar = function() {
-		$('#settingsBarContainer')
-			.css({'top':'-80px'})
-			.animate({'top': '30px'}, 'slow');
+		
 	};
 
 	var showSection = function(type) {
 		if(type === 'text') {
-			$('.settingsBar').hide();
-			$('#fontSettingsBar').show();
+			jQuery('.settingsBar').hide();
+			jQuery('#fontSettingsBar').show();
 			
 		} else if( type === 'segment') {
-			$('.settingsBar').hide();
-			$('#detailSelectionBar').show();
+			jQuery('.settingsBar').hide();
+			jQuery('#detailSelectionBar').show();
 		}
 		
-		$('#styleSectionBar').show();
-		$('#selectionInfoBar').show();
+		jQuery('#styleSectionBar').show();
+		jQuery('#selectionInfoBar').show();
 	};
 	
 	
 	var hideSection = function(type) {
 		if(type === 'text') {
-			$('#fontSettingsBar').hide();
+			jQuery('#fontSettingsBar').hide();
 			
 		} else {
 			// hide everything
-			$('.settingsBar').hide();
+			jQuery('.settingsBar').hide();
 			
 		}
-		$('#styleSectionBar').show();
-		$('#selectionInfoBar').show();
+		jQuery('#styleSectionBar').show();
+		jQuery('#selectionInfoBar').show();
 	};
 	
 	
 	var update = function(item) {
 		var selectionType = pg.selection.getSelectionType();
 		
-		$('#selectionTypeLabel').html(selectionType);
+		jQuery('#selectionTypeLabel').html(selectionType);
 		
 		if(selectionType === 'Mixed') {
 			hideSection();

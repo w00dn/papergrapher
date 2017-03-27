@@ -39,6 +39,7 @@ pg.undo = function() {
 		if(head > 0) {
 			head--;
 			restore(states[head]);
+			jQuery(document).trigger('Undo');
 		}
 	};
 	
@@ -47,6 +48,7 @@ pg.undo = function() {
 		if(head < states.length-1) {
 			head++;
 			restore(states[head]);
+			jQuery(document).trigger('Redo');
 		}
 	};
 	

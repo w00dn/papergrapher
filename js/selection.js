@@ -16,11 +16,18 @@ pg.selection = function() {
 	
 	var setSelectionMode = function(mode) {
 		selectionMode = mode;
+		if(mode == "Item") {
+			var selectedItems = getSelectedItems();
+			for(var i=0; i<selectedItems.lengt; i++) {
+				selectedItems[i].fullySelected = false;
+				selectedItems[i].selected = true;
+			}
+		}
 	};
 
 	
 	var selectAll = function() {
-		var items = pg.document.getAllItems();
+		var items = pg.helper.getAllPaperItems();
 		
 		if(selectionMode === "Segment") {
 			for(var i=0; i<items.length; i++) {
@@ -65,7 +72,7 @@ pg.selection = function() {
 	
 
 	var invertSelection = function() {
-		var items = pg.document.getAllItems();
+		var items = pg.helper.getAllPaperItems();
 
 		for(var i=0; i<items.length; i++) {
 			items[i].fullySelected = !items[i].fullySelected;
@@ -74,24 +81,22 @@ pg.selection = function() {
 
 
 	var deleteSelection = function() {
-		if( pg.selection.checkSelectionMode('Item')) {
-			var items = pg.selection.getSelectedItems();
+		if(checkSelectionMode('Item')) {
+			var items = getSelectedItems();
 			for(var i=0; i<items.length; i++) {
-				var item = items[i];
-				item.remove();
+				items[i].remove();
 			}
 
-		} else if(pg.selection.checkSelectionMode('Segment')) {
-			var items = paper.project.selectedItems;
+		} else if(checkSelectionMode('Segment')) {
+			var items = getSelectedItems();
 			for(var i=0; i<items.length; i++) {
-				var item = items[i];
-				deleteSegments(item);
+				deleteSegments(items[i]);
 			}
 		}
 		
+		jQuery(document).trigger('DeleteItems');
 		paper.project.view.update();
 		pg.undo.snapshot('deleteSelection');
-
 	};
 	
 	
@@ -124,14 +129,18 @@ pg.selection = function() {
 				}
 			}
 		}
+		// remove items with no segments left
+		if(item.segments.length <= 0) {
+			item.remove();
+		}
 	};
 	
 
 	var splitPathAtSelectedSegments = function() {
-		var items = pg.selection.getSelectedItems();
+		var items = getSelectedItems();
 		for(var i=0; i<items.length; i++) {
 			var item = items[i];
-			if(pg.selection.checkSelectionMode('Segment')) {
+			if(checkSelectionMode('Segment')) {
 				var segments = item.segments;
 				for(var j=0; j<segments.length; j++) {
 					var segment = segments[j];
@@ -200,7 +209,7 @@ pg.selection = function() {
 	
 	
 	var cloneSelection = function() {
-		var selectedItems = pg.selection.getSelectedItems();
+		var selectedItems = getSelectedItems();
 		for(var i = 0; i < selectedItems.length; i++) {
 			var item = selectedItems[i];
 			item.clone();
@@ -224,6 +233,9 @@ pg.selection = function() {
 			setItemSelection(itemsCompoundPath, state);
 
 		} else {
+			if(item.data && item.data.noSelect) {
+				return;
+			}
 			// fully selected segments need to be unselected first
 			item.fullySelected = false; 
 			// then the item can be normally selected
@@ -260,7 +272,9 @@ pg.selection = function() {
 			if(pg.group.isGroup(item) &&
 				!pg.group.isGroup(item.parent) ||
 				!pg.group.isGroup(item.parent)) {
-				itemsAndGroups.push(item);
+				if(item.data && !item.data.isSelectionBound) {
+					itemsAndGroups.push(item);
+				}
 			}
 		}
 		return itemsAndGroups;
@@ -276,7 +290,7 @@ pg.selection = function() {
 		var selectionType = '';
 		for(var i=0; i<selection.length; i++) {
 			var item = selection[i];
-			if(pg.selection.getSelectionMode() === 'Segment') {
+			if(getSelectionMode() === 'Segment') {
 				return 'Segment';
 			}
 			
@@ -294,7 +308,7 @@ pg.selection = function() {
 	
 	// only returns paths, no compound paths, groups or any other stuff
 	var getSelectedPaths = function() {
-		var allPaths = paper.project.selectedItems;
+		var allPaths = getSelectedItems();
 		var paths = [];
 
 		for(var i=0; i<allPaths.length; i++) {
@@ -308,7 +322,7 @@ pg.selection = function() {
 	
 	
 	var colorizeSelectedFill = function(colorString) {
-		var items = pg.selection.getSelectedItems();
+		var items = getSelectedItems();
 		for(var i=0; i<items.length; i++) {
 			var item = items[i];
 			if(pg.item.isPointTextItem(item) && !colorString) {
@@ -321,7 +335,7 @@ pg.selection = function() {
 
 
 	var colorizeSelectedStroke = function(colorString) {
-		var items = pg.selection.getSelectedItems();
+		var items = getSelectedItems();
 
 		for(var i=0; i<items.length; i++) {
 			items[i].strokeColor = colorString;
@@ -331,7 +345,7 @@ pg.selection = function() {
 	
 	
 	var setOpacity = function(alpha) {
-		var items = paper.project.selectedItems;
+		var items = getSelectedItems();
 
 		for(var i=0; i<items.length; i++) {
 			if(pg.group.isGroup(items[i])) {
@@ -344,7 +358,7 @@ pg.selection = function() {
 	
 	
 	var setBlendMode = function(mode) {
-		var items = paper.project.selectedItems;
+		var items = getSelectedItems();
 		
 		for(var i=0; i<items.length; i++) {
 			if(pg.group.isGroup(items[i])) {
@@ -357,7 +371,7 @@ pg.selection = function() {
 	
 	
 	var setStrokeWidth = function(value) {
-		var items = paper.project.selectedItems;
+		var items = getSelectedItems();
 
 		for(var i=0; i<items.length; i++) {
 			if(pg.group.isGroup(items[i])) {
@@ -370,7 +384,7 @@ pg.selection = function() {
 	
 	
 	var setFontFamily = function(value) {
-		var items = paper.project.selectedItems;
+		var items = getSelectedItems();
 		
 		for(var i=0; i<items.length; i++) {
 			var item = items[i];
@@ -383,7 +397,7 @@ pg.selection = function() {
 	
 	
 	var setFontWeight = function(value) {
-		var items = paper.project.selectedItems;
+		var items = getSelectedItems();
 		
 		for(var i=0; i<items.length; i++) {
 			var item = items[i];
@@ -396,14 +410,13 @@ pg.selection = function() {
 	
 	
 	var setFontSize = function(value) {
-		var items = paper.project.selectedItems;
+		var items = getSelectedItems();
 		
 		for(var i=0; i<items.length; i++) {
 			var item = items[i];
 			if(pg.item.isPointTextItem(item)) {
 				item.fontSize = value;
 				item.leading = item.fontSize;
-//				item.leading = item.fontSize*1.5;
 			}
 		}
 		pg.undo.snapshot('setFontSize');
@@ -411,14 +424,14 @@ pg.selection = function() {
 	
 	
 	var switchSelectedHandles = function(mode) {
-		var items = paper.project.selectedItems;
+		var items = getSelectedItems();
 		for(var i=0; i<items.length; i++) {
 			var segments = items[i].segments;
 			for(var j=0; j<segments.length; j++) {
 				var seg = segments[j];
 				if(!seg.selected) continue;
 
-				pg.helper.switchHandle(seg, mode);
+				pg.geometry.switchHandle(seg, mode);
 			}
 		}
 		pg.undo.snapshot('switchSelectedHandles');
@@ -428,7 +441,7 @@ pg.selection = function() {
 	var removeSelectedSegments = function() {
 		pg.undo.snapshot('removeSelectedSegments');
 		
-		var items = paper.project.selectedItems;
+		var items = getSelectedItems();
 		var segmentsToRemove = [];
 		
 		for(var i=0; i<items.length; i++) {
@@ -449,8 +462,8 @@ pg.selection = function() {
 	
 	
 	var processRectangularSelection = function(event, rect, mode) {
-		var allItems = pg.document.getAllItems();
-				
+		var allItems = pg.helper.getAllPaperItems();
+		
 		itemLoop:
 		for(var i=0; i<allItems.length; i++) {
 			var item = allItems[i];
@@ -506,10 +519,10 @@ pg.selection = function() {
 
 					} else {
 						if(event.modifiers.shift && item.selected) {
-							pg.selection.setItemSelection(item,false);
+							setItemSelection(item,false);
 
 						} else {
-							pg.selection.setItemSelection(item,true);
+							setItemSelection(item,true);
 						}
 						return false;
 					}
@@ -540,10 +553,10 @@ pg.selection = function() {
 
 				} else {
 					if(event.modifiers.shift && item.selected) {
-						pg.selection.setItemSelection(item,false);
+						setItemSelection(item,false);
 
 					} else {
-						pg.selection.setItemSelection(item,true);
+						setItemSelection(item,true);
 					}
 					return false;
 				}
@@ -560,7 +573,7 @@ pg.selection = function() {
 	
 	
 	var checkBoundsItem = function(selectionRect, item, event) {
-		var itemBounds = new Path([
+		var itemBounds = new paper.Path([
 			item.localToGlobal(item.internalBounds.topLeft),
 			item.localToGlobal(item.internalBounds.topRight),
 			item.localToGlobal(item.internalBounds.bottomRight),
@@ -574,10 +587,10 @@ pg.selection = function() {
 			if( selectionRect.contains(seg.point) ||
 				(i === 0 && selectionRect.getIntersections(itemBounds).length > 0)) {
 				if(event.modifiers.shift && item.selected) {
-					pg.selection.setItemSelection(item,false);
+					setItemSelection(item,false);
 
 				} else {
-					pg.selection.setItemSelection(item,true);
+					setItemSelection(item,true);
 				}
 				itemBounds.remove();
 				return true;

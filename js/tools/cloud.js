@@ -6,7 +6,6 @@ pg.tools.cloud = function() {
 	
 	var options = {
 		name: 'Cloud',
-		type: 'toolbar',
 		pointDistance: 30,
 		randomizeDistance: false,
 		randomDistMin: 15,
@@ -16,23 +15,26 @@ pg.tools.cloud = function() {
 	
 	var components = {
 		pointDistance: {
-			type: 'number',
-			label: 'hideOnRandomize::Point distance',
-			step: 1
+			type: 'int',
+			label: 'Point distance',
+			requirements : {randomizeDistance : false},
+			min: 1
 		},
 		randomizeDistance: {
 			type: 'boolean',
 			label: 'Randomize'
 		},
 		randomDistMin: {
-			type: 'number',
-			label: 'showOnRandomize::Random min',
-			step: 1
+			type: 'float',
+			label: 'Random min',
+			requirements : {randomizeDistance : true},
+			min: 0
 		},
 		randomDistMax: {
-			type: 'number',
-			label: 'showOnRandomize::Random max',
-			step: 1
+			type: 'float',
+			label: 'Random max',
+			requirements : {randomizeDistance : true},
+			min: 0
 		},
 		closePath: {
 			type: 'list',
@@ -50,10 +52,12 @@ pg.tools.cloud = function() {
 		options = pg.tools.getLocalOptions(options);
 		
 		tool = new Tool();
-		tool.fixedDistance = 20;
 
 		tool.onMouseDown = function(event) {
 			if(event.event.button > 0) return;  // only first mouse button
+			
+			tool.fixedDistance = options.pointDistance;
+			
 			startPos = event.point;
 			path = new Path();
 			path = pg.style.applyActiveToolbarStyle(path);
@@ -61,13 +65,14 @@ pg.tools.cloud = function() {
 			path.strokeJoin = 'round';
 			path.add(event.point);
 		};
-
+		
 		tool.onMouseDrag = function(event) {
 			if(event.event.button > 0) return;  // only first mouse button
-			
-			if(options.randomizeDistance && Math.random() > 0.3) {
-				options.pointDistance = 
-				pg.math.getRandomInt(options.randomDistMin, options.randomDistMax);
+			if(options.randomizeDistance) {
+				tool.fixedDistance = 
+				pg.math.getRandomInt(parseInt(options.randomDistMin), parseInt(options.randomDistMax));
+			} else {
+				tool.fixedDistance = options.pointDistance;
 			}
 			path.arcTo(event.point);
 		};
@@ -90,35 +95,15 @@ pg.tools.cloud = function() {
 			pg.undo.snapshot('cloud');
 		};
 		
-		// palette stuff
-		var palette = new Palette('Options', components, options);
-		palette.onChange = function(component, name, value) {
-			updateTool();
-		};
+		// setup floating tool options panel in the editor
+		pg.toolOptionPanel.setup(options, components, function(){});
 		
 		tool.activate();
-	};
-	
-
-	var updateTool = function() {
-		tool.fixedDistance = options.pointDistance;
-		if(options.randomizeDistance === true) {
-			$('.hideOnRandomize').hide();
-			$('.showOnRandomize').show();
-		} else {
-			$('.hideOnRandomize').show();
-			$('.showOnRandomize').hide();
-		}
-		
-		// write the options to jStorage when a value changes
-		pg.tools.setLocalOptions(options);
-		
 	};
 	
 	
 	return {
 		options: options,
-		activateTool : activateTool,
-		updateTool: updateTool
+		activateTool : activateTool
 	};
 };

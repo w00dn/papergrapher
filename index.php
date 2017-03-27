@@ -8,6 +8,7 @@
 	<link href="css/reset.css" rel="stylesheet" />
 	<link href="css/spectrum.css" rel="stylesheet" />
 	<link href="css/spectrum_override.css" rel="stylesheet" />
+	<link href="css/modal.css" rel="stylesheet" />
 	<link href="css/menu.css" rel="stylesheet" />
 	<link href="css/styles.css" rel="stylesheet" />
 	<link href="css/toolbar.css" rel="stylesheet" />
@@ -15,15 +16,20 @@
 
 </head>
 <body>
-	<canvas id="paperCanvas" data-paper-resize="true"></canvas>
+	<canvas id="paperCanvas" resize></canvas>
+	
+	<div id="loadingScreen" class="loadingScreen">
+		<div class="panel">Loading...</div>
+	</div>
 	
 	<!-- Main Menu -->
 	<nav class="appNav" id="appNav">
 		<ul class="topMenu">
 			<li class="topMenuButton">File
 				<ul class="subMenu" id="fileSubMenu">
-					<li class="clearDocument_button">Clear Document</li>
-					<li class="resetSettings_button">Reset Settings</li>
+					<li class="clearDocument_button">New</li>
+					<li class="importJSON_button">Open<input id="fileUploadJSON" class="fileUploadInput" type="file" data-url="import/"></li>
+					<li class="exportJSON_button">Save</li>
 					<hr />
 					<li class="importImage_button">Import Image<input id="fileUploadImage" class="fileUploadInput" type="file" data-url="import/"></li>
 					<li class="importImageFromURL_button">Import Image from URL</li>
@@ -33,8 +39,7 @@
 					<li class="importSVGFromURL_button">Import SVG from URL</li>
 					<li class="exportSVG_button">Export SVG</li>
 					<hr />
-					<li class="importJSON_button">Import JSON<input id="fileUploadJSON" class="fileUploadInput" type="file" data-url="import/"></li>
-					<li class="exportJSON_button">Export JSON</li>
+					<li class="resetSettings_button">Reset Settings</li>
 				</ul>
 			</li>
 			<li class="topMenuButton">Edit
@@ -61,7 +66,7 @@
 			</li>
 			<li class="topMenuButton">Select
 				<ul class="subMenu" id="selectSubMenu">
-					<li class="selectAll_button">Select all</li>
+					<li class="selectAll_button" title="Ctrl-A">Select all</li>
 					<li class="deselectAll_button">Deselect all</li>
 					<li class="invertSelection_button">Invert selection</li>
 				</ul>
@@ -72,6 +77,7 @@
 					<li class="zoomIn_button" title="Alt-ScrollUp">Zoom In</li>
 					<li class="zoomOut_button" title="Alt-ScrollDown">Zoom Out</li>
 					<li class="resetZoom_button" title="Ctrl-1">Reset Zoom</li>
+					<li class="resetPan_button">Reset Pan</li>
 				</ul>
 			</li>
 			
@@ -80,11 +86,17 @@
 					<li class="scriptEditorButton" title="Script Editor">Script Editor</li>
 				</ul>
 			</li>
+			
+			<li class="topMenuButton">Info
+				<ul class="subMenu" id="aboutSubMenu">
+					<li class="aboutButton" title="About">About</li>
+				</ul>
+			</li>
 		</ul>
 	</nav>
 	
 	
-	<div id="toolbar" class="hidden toolbar">
+	<div id="toolbar" class="toolbar">
 		
 		<!-- Tools Container -->
 		<div class="toolsContainer toolbarSection">
@@ -101,7 +113,7 @@
 			<div class="tool_Rotate tool" data-name="Rotate" title="Rotate (R)"></div>
 			<div class="tool_Scale tool" data-name="Scale" title="Scale (S)"></div>
 			<div class="tool_Zoom tool" data-name="Zoom" title="Zoom (Z)"></div>
-			<div class="tool_Test tool" data-name="Test" title="Test"></div>
+			<div class="tool_ExportRect tool" data-name="ExportRect" title="Export area"></div>
 		</div>
 		
 		<!-- Color Container -->
@@ -278,8 +290,8 @@
 	<div id="colorInputBlocker" class="colorInputBlocker hidden"></div>
 		
 	<!-- libraries -->
-	<script src="js/lib/paper-full.js"></script>
-	<script src="js/lib/jquery-1.11.1.min.js"></script>
+	<script src="js/lib/paper-full.min.js"></script>
+	<script src="js/lib/jquery-2.2.4.min.js"></script>
 	<script src="js/lib/jquery-ui.min.js"></script>
 	<script src="js/lib/jquery-extensions.js"></script>
 	
@@ -298,11 +310,15 @@
 	<script src="js/init.js"></script>
 	<script src="js/settings.js"></script>
 	<script src="js/document.js"></script>
+	<script src="js/import.js"></script>
+	<script src="js/export.js"></script>
+	<script src="js/modal.js"></script>
 	<script src="js/view.js"></script>
 	<script src="js/item.js"></script>
 	<script src="js/group.js"></script>
 	<script src="js/layer.js"></script>
 	<script src="js/selection.js"></script>
+	<script src="js/toolOptionPanel.js"></script>
 	<script src="js/hover.js"></script>
 	<script src="js/order.js"></script>
 	<script src="js/menu.js"></script>
@@ -313,16 +329,18 @@
 	<script src="js/style.js"></script>
 	<script src="js/tools.js"></script>
 	<script src="js/math.js"></script>
+	<script src="js/geometry.js" type="text/paperscript" canvas="paperCanvas"></script>
 	<script src="js/edit.js"></script>
 	<script src="js/compoundPath.js"></script>
 	<script src="js/undo.js"></script>
+	<script src="js/helper.js"></script>
 	<script src="js/codeEditor.js"></script>
 	
-	<script src="js/helper.js" type="text/paperscript" canvas="paperCanvas"></script>
 	<!-- tools -->
 	<?php loadToolScripts(); ?>
 	<!-- dev -->
 	<script src="js/dev.js"></script>
+
 </body>
 </html>
 
@@ -345,3 +363,4 @@
 			echo $js;
 		}
 	}
+

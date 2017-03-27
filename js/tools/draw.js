@@ -6,10 +6,9 @@ pg.tools.draw = function() {
 	
 	var options = {
 		name: 'Draw',
-		type: 'toolbar',
 		pointDistance: 20,
 		drawParallelLines: false,
-		lines: 1,
+		lines: 3,
 		lineDistance: 10,
 		closePath: 'near start',
 		smoothPath : true
@@ -17,23 +16,25 @@ pg.tools.draw = function() {
 	
 	var components = {
 		pointDistance: {
-			type: 'number',
+			type: 'int',
 			label: 'Point distance',
-			step: 1
+			min: 1
 		},
 		drawParallelLines: {
 			type: 'boolean',
 			label: 'Draw parallel lines'
 		},
 		lines: {
-			type: 'number',
-			label: 'showOnDrawParallelLines::Lines',
-			step: 1
+			type: 'int',
+			label: 'Lines',
+			requirements : {drawParallelLines: true},
+			min: 1
 		},
 		lineDistance: {
-			type: 'number',
-			label: 'showOnDrawParallelLines::Line distance',
-			step: 1
+			type: 'float',
+			label: 'Line distance',
+			requirements : {drawParallelLines: true},
+			min: 0
 		},
 		closePath: {
 			type: 'list',
@@ -53,13 +54,21 @@ pg.tools.draw = function() {
 		options = pg.tools.getLocalOptions(options);
 		
 		tool = new Tool();
-
-		tool.fixedDistance = options.pointDistance;
+		
+		var lineCount;
 
 		tool.onMouseDown = function(event) {
 			if(event.event.button > 0) return;  // only first mouse button
 			
-			for( var i=0; i < options.lines; i++) {
+			tool.fixedDistance = options.pointDistance;
+
+			if (options.drawParallelLines) {
+				lineCount = options.lines;
+			} else {
+				lineCount = 1;
+			}
+		
+			for( var i=0; i < lineCount; i++) {
 				var path = paths[i];
 				path = new Path();
 				
@@ -71,10 +80,10 @@ pg.tools.draw = function() {
 
 		tool.onMouseDrag = function(event) {
 			if(event.event.button > 0) return;  // only first mouse button
-			
+						
 			var offset = event.delta;
 			offset.angle += 90;
-			for( var i=0; i < options.lines; i++) {
+			for( var i=0; i < lineCount; i++) {
 				var path = paths[i];
 				offset.length = options.lineDistance * i;
 				path.add(event.middlePoint + offset);
@@ -89,12 +98,12 @@ pg.tools.draw = function() {
 			if(paths[0].segments.length === 0) return;
 			
 			var group;
-			if(options.lines > 1) {
+			if(lineCount > 1) {
 				group = new Group();
 			}
 			
 			var nearStart = pg.math.checkPointsClose(paths[0].firstSegment.point, event.point, 30);
-			for( var i=0; i < options.lines; i++) {
+			for( var i=0; i < lineCount; i++) {
 				var path = paths[i];
 				
 				if(options.closePath === 'near start' && nearStart) {
@@ -104,7 +113,7 @@ pg.tools.draw = function() {
 				}
 				if(options.smoothPath) path.smooth();
 				
-				if(options.lines > 1) {
+				if(lineCount > 1) {
 					group.addChild(path);
 				}
 			}
@@ -114,36 +123,21 @@ pg.tools.draw = function() {
 			
 		};
 		
-		var palette = new Palette('Options', components, options);
-		palette.onChange = function(component, name, value) {
-			updateTool();
-			
-		};
+		// setup floating tool options panel in the editor
+		pg.toolOptionPanel.setup(options, components, function() {
+			console.log('ohai', options.lines);
+			lineCount = options.lines;
+			tool.fixedDistance = options.pointDistance;
+		});
 		
 		tool.activate();
 		
 	};
 
-	var updateTool = function() {
-		tool.fixedDistance = options.pointDistance;
-		
-		if(options.drawParallelLines === true) {
-			$('.showOnDrawParallelLines').show();
-		} else {
-			// reset parallel lines to 1
-			options.lines = 1;
-			$('.showOnDrawParallelLines').hide();
-		}
-		
-		// write the options to jStorage when a value changes
-		pg.tools.setLocalOptions(options);
-	};
-
 
 	return {
 		options: options,
-		activateTool:activateTool,
-		updateTool: updateTool
+		activateTool:activateTool
 	};
 
 };

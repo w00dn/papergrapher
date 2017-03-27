@@ -10,6 +10,7 @@
 	z-index: 20;
 }
 
+
 .toolbarSection {
 	position: relative;
 	margin-bottom: 20px;
@@ -41,6 +42,10 @@
 
 .colorContainer {
 	height: 60px;
+}
+
+.colorContainer input {
+	display:none;
 }
 
 .colorSwitchButton {
@@ -85,13 +90,30 @@
 	position: absolute;
 	top: 74px;
 	left: 92px;
-	background-color: #fff;
-	padding: 10px 10px 10px 10px;
+	background-color: #ddd;
+	padding: 10px;
 	border-radius: 0 0 3px 3px;
 }
 
-.palettejs-panel td {
-	height: 28px;
+.palettejs-panel .options {
+	margin-bottom: 0.4em;
+	clear:both;
+}
+
+.palettejs-panel .option-section:after {
+	content: "";
+	display:table;
+	clear:both;
+	margin-bottom: 0.4em;
+}
+
+.palettejs-panel h3 {
+	font-size: 0.85em;
+	margin: -10px -10px 6px -10px;
+	padding: 5px 10px;
+	cursor: move;
+	color: #999;
+	background-color: #eee;
 }
 
 .palettejs-panel input[type=number] {
@@ -101,19 +123,29 @@
 
 .palettejs-panel input[type=checkbox] {
 	margin: 0;
-	vertical-align: bottom;
 }
 
 .palettejs-panel label {
 	margin-right: 10px;
 	display:block;
-	min-height: 20px;
+	float:left;
+	line-height: 1.8;
 }
 
 .palettejs-panel label,
 .palettejs-panel input,
 .palettejs-panel select,
 .palettejs-panel button {
-	font-size: 12px;
+	font-size: 0.85em;
 }
 
+.palettejs-panel input,
+.palettejs-panel select {
+	text-align: right;
+	display:inline-block;
+	float:right;
+}
+
+.palettejs-panel button {
+	width: 100%;
+}

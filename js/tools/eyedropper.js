@@ -4,8 +4,7 @@ pg.tools.eyedropper = function() {
 	var tool;
 
 	var options = {
-		name: 'Eyedropper',
-		type: 'toolbar'
+		name: 'Eyedropper'
 	};
 
 	var activateTool = function() {
@@ -24,7 +23,7 @@ pg.tools.eyedropper = function() {
 		tool.onMouseDown = function(event) {
 			if(event.event.button > 0) return;  // only first mouse button
 			
-			var hitResult = project.hitTest(event.point, hitOptions);
+			var hitResult = paper.project.hitTest(event.point, hitOptions);
 			if (hitResult) {
 				if(event.modifiers.option) {
 					pg.undo.snapshot('applyToolbarStyles');

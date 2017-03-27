@@ -5,28 +5,54 @@ pg.tools.circle = function() {
 	var tool;
 	
 	var options = {
-		name: 'Circle',
-		type: 'toolbar',
+		name: 'Circle'
 	};
 	
 	var activateTool = function() {
 		tool = new Tool();
 		
+		var shape;
+		var mouseDown;
+		
+		tool.onMouseDown = function(event) {
+			if(event.event.button > 0) return;  // only first mouse button
+			
+			mouseDown = event.downPoint;
+			
+			shape = new Shape.Ellipse({
+				point: event.downPoint,
+				size: 0
+			});
+			
+			shape = pg.style.applyActiveToolbarStyle(shape);
+		};
+		
+		
 		tool.onMouseDrag = function(event) {
 			if(event.event.button > 0) return;  // only first mouse button
 			
-			var path = new Path.Circle({
-				center: event.downPoint,
-				radius: (event.downPoint - event.point).length
-			});
-
-			path = pg.style.applyActiveToolbarStyle(path);
-			// Remove this path on the next drag event:
-			path.removeOnDrag();
+			var ex = event.point.x;
+			var ey = event.point.y;
+			
+			if(event.modifiers.shift) {
+				shape.size = new Point(mouseDown.x - ex, mouseDown.x -ex);
+			} else {
+				shape.size = new Point(mouseDown.x - ex, mouseDown.y -ey);
+			}
+			if(event.modifiers.alt) {
+				shape.position = mouseDown;
+			} else {
+				shape.position = mouseDown - shape.size *0.5;
+			}
 		};
+		
 		
 		tool.onMouseUp = function(event) {
 			if(event.event.button > 0) return;  // only first mouse button
+			
+			// convert shape to path
+			shape.toPath(true);
+			shape.remove();
 			
 			pg.undo.snapshot('circle');
 		};

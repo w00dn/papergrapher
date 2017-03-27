@@ -37,25 +37,20 @@ pg.tools.bezier = function() {
 			
 			if(!path) {
 				if(!hoveredItem) {
-					//console.log('new path');
 					pg.selection.clearSelection();
 					path = new Path();
 					path = pg.style.applyActiveToolbarStyle(path);
 					
 				} else {
-					//console.log(hoveredItem.item.closed);
 					if(!hoveredItem.item.closed) {
 						mode = 'continue';
 						path = hoveredItem.item;
 						currentSegment = hoveredItem.segment;
-						//console.log('continue', hoveredItem);
 						if(hoveredItem.item.lastSegment !== hoveredItem.segment) {
-							//console.log('reversin on continue');
 							path.reverse();
 						}
 						
 					} else {
-						//console.log('modify');
 						path = hoveredItem.item;
 					}
 				}
@@ -63,10 +58,8 @@ pg.tools.bezier = function() {
 			}
 			
 			if(path) {
-//				console.log('modify path');
 				var result = findHandle(path, event.point);
 				if (result && mode !== 'continue') {
-					//console.log('result');
 					currentSegment = result.segment;
 					type = result.type;
 					if (result.type === 'point') {
@@ -76,10 +69,8 @@ pg.tools.bezier = function() {
 							mode = 'close';
 							path.closed = true;
 							path.firstSegment.selected = true;
-							//console.log('closing');
 							
 						} else {
-							//console.log('removin');
 							mode = 'remove';
 							result.segment.remove();
 							
@@ -94,7 +85,6 @@ pg.tools.bezier = function() {
 							!hoveredItem.item.closed) {
 						
 							// joining two paths
-							//console.log('joinin');
 							var hoverPath = hoveredItem.item;
 							// check if the connection point is the first segment
 							// reverse path if it is not because join() 
@@ -110,17 +100,13 @@ pg.tools.bezier = function() {
 						
 							mode = 'add';
 							// inserting segment on curve/stroke
-							//console.log('inserting');
 							var location = hoveredItem.location;
 							currentSegment = path.insert(location.index + 1, event.point);
-							//console.log(currentSegment);
-							//path.smooth();
 							currentSegment.selected = true;
 						}
 
 					} else {
 						mode = 'add';
-						//console.log('adding');
 						// add a new segment to the path
 						currentSegment = path.add(event.point);
 						currentSegment.selected = true;
@@ -133,7 +119,7 @@ pg.tools.bezier = function() {
 		};
 		
 		tool.onMouseMove = function(event) {			
-			var hitResult = project.hitTest(event.point, hitOptions);
+			var hitResult = paper.project.hitTest(event.point, hitOptions);
 			if(hitResult && hitResult.item && hitResult.item.selected) {
 				hoveredItem = hitResult;
 				
