@@ -43,7 +43,7 @@ pg.tools = function() {
 			case 'Zoom':
 				return new pg.tools.zoom();
 				
-			case 'ExportRect':
+			case 'ExportArea':
 				return new pg.tools.exportrect();
 				
 			case 'ViewZoom':

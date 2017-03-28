@@ -17,7 +17,7 @@ pg.tools.text = function () {
 		var hitOptions = {
 			fill: true,
 			class: PointText,
-			tolerance: 5
+			tolerance: 5 / paper.view.zoom
 		};
 
 		tool = new Tool();

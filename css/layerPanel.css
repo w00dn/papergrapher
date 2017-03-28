@@ -1,0 +1,101 @@
+.layerPanel {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 240px;
+	z-index: 40;
+	background-color: #777;
+	color: #ccc;
+}
+
+.layerPanel>header {
+	padding: 10px;
+	cursor: move;
+}
+
+.newLayerButton {
+	position: absolute;
+	right: 8px;
+	top: 8px;
+	height: 20px;
+	padding: 2px 10px;
+	font-size: 0.8em;
+	line-height: 0;
+}
+
+.layerEntries {
+	overflow-y: auto;
+}
+
+.layerEntry {
+	display:table;
+	padding: 7px 12px 7px 0;
+	width: 100%;
+	font-size: 0.9em;
+	cursor: move;
+	height: 40px;
+	border-top: 1px solid #333;
+}
+
+.layerEntry:hover,
+.layerEntry.active {
+	background-color: #666;
+}
+
+.layerEntry>li {
+	display:table-cell;
+	vertical-align: middle;
+	padding: 0 1em 0 0;
+}
+
+.layerEntry>li:last-child {
+	padding-right: 0;
+	text-align: right;
+}
+
+
+.layerEntry .layerVisSection {
+	border-left: 5px solid transparent;
+	padding-left: 10px;
+}
+
+.layerEntry.active .layerVisSection {
+	border-left: 5px solid #009dec;
+}
+
+.layerEntry input[type="checkbox"],
+.layerEntry input[type="radio"] {
+	margin: 4px 0 0 0;
+	padding: 0;
+}
+
+.layerEntry .layerName input {
+	padding: 0.05em 0.5em 0 0.5em;
+	font-size: inherit;
+	background-color: #555;
+	border: none;
+	color: inherit;
+	width: 100%;
+}
+
+.layerEntry .layerName input[disabled] {
+	background-color: transparent;
+}
+
+.layerDeleteButton {
+	width: 18px;
+	height: 18px;
+	padding: 2px;
+	line-height: 0;
+}
+
+.layerEntry .layerActions {
+	padding: 0;
+	width: 24px;
+}
+
+.layerEntry .layerInfo {
+	width: 20px;
+	padding: 2px 8px;
+	cursor: default;
+}

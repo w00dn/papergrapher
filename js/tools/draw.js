@@ -125,7 +125,6 @@ pg.tools.draw = function() {
 		
 		// setup floating tool options panel in the editor
 		pg.toolOptionPanel.setup(options, components, function() {
-			console.log('ohai', options.lines);
 			lineCount = options.lines;
 			tool.fixedDistance = options.pointDistance;
 		});

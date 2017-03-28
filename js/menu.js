@@ -198,7 +198,11 @@ pg.menu = function() {
 		jQuery('.ungroup_button').click(function() {
 			pg.group.ungroupItems(pg.selection.getSelectedItems());
 		});
-
+		
+		jQuery('.sendToActiveLayer_button').click(function() {
+			pg.layer.addItemsToLayer(pg.selection.getSelectedItems(), paper.project.activeLayer);
+		});
+		
 		jQuery('.bringToFront_button').click(function() {
 			pg.order.bringSelectionToFront();
 		});
@@ -257,9 +261,12 @@ pg.menu = function() {
 	var setupWindowSection = function() {
 		
 		jQuery('.scriptEditorButton').click(function() {
-			pg.codeEditor.show();
+			pg.codeEditor.toggleVisibility();
 		});
 		
+		jQuery('.layerPanelButton').click(function() {
+			pg.layerPanel.toggleVisibility();
+		});
 	};
 	
 	var setupInfoSection = function() {
@@ -314,7 +321,7 @@ pg.menu = function() {
 		
 	
 	var showAboutModal = function () {
-		var html = '<h2 class="appTitle">Papergrapher</h2><span class="versionNumber">' + pg.settings.getVersionNumber() + '</span><p>A vector editor for your browser, based on <a href="http://paperjs.org/" target="_blank">Paper.js</a> and <a href="https://github.com/memononen/stylii" target="_blank">stylii</a>.</p><p>Check it out on <a href="https://github.com/w00dn/papergrapher" target="_blank">GitHub</a><br>Read the <a href="https://github.com/w00dn/papergrapher/blob/master/LICENSE" target="_blank">License</a><br>Created by Rolf Fleischmann <a href="https://twitter.com/w00dn" target="_blank">@w00dn</a></p>';
+		var html = '<h2 class="appTitle">Papergrapher</h2><span class="versionNumber">' + pg.settings.getVersionNumber() + '</span><p>A vector editor for your browser, based on <a href="http://paperjs.org/" target="_blank">Paper.js</a> and <a href="https://github.com/memononen/stylii" target="_blank">stylii</a>. Check it out on <a href="https://github.com/w00dn/papergrapher" target="_blank">GitHub</a>.</p><p>Developed by <a href="https://twitter.com/w00dn" target="_blank">Rolf Fleischmann</a><br>Published under the <a href="https://github.com/w00dn/papergrapher/blob/master/LICENSE" target="_blank">MIT License</a></p>';
 		new pg.modal.floater('appInfoWindow', 'Info', html, 300, 100);
 	};
 	

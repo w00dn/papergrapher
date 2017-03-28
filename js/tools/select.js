@@ -25,7 +25,7 @@ pg.tools.select = function() {
 			curves: true,
 			fill: true,
 			guide: false,
-			tolerance: 5
+			tolerance: 4 / paper.view.zoom
 		};
 
 		var mode = 'none';
@@ -232,7 +232,7 @@ pg.tools.select = function() {
 				
 			} else if(mode == 'scale') {
 				itemGroup.applyMatrix = true;
-				paper.project.activeLayer.addChildren(itemGroup.children);
+				itemGroup.layer.addChildren(itemGroup.children);
 				itemGroup.remove();
 				pg.undo.snapshot('scaleSelection');
 				
@@ -251,7 +251,7 @@ pg.tools.select = function() {
 			}
 		};
 		
-		jQuery(document).on('DeleteItems Undo Grouped Ungrouped', function(){
+		jQuery(document).on('DeleteItems Undo Grouped Ungrouped SelectionChanged', function(){
 			setSelectionBounds();
 		});
 				
@@ -295,7 +295,7 @@ pg.tools.select = function() {
 		boundsPath.fillColor = null;
 		boundsPath.strokeScaling = false;
 		boundsPath.fullySelected = true;
-		boundsPath.bringToFront();
+		boundsPath.parent = pg.layer.getGuideLayer();
 		
 		jQuery.each(boundsPath.segments, function(index, segment) {
 			var size = 4;
@@ -317,9 +317,10 @@ pg.tools.select = function() {
 						noHover: true
 					},
 					radius: 5 / paper.view.zoom,
-					strokeColor: '#009dec',
+					strokeColor: pg.guides.getGuideColor('blue'),
 					fillColor: 'white',
-					strokeWidth: 0.5 / paper.view.zoom
+					strokeWidth: 0.5 / paper.view.zoom,
+					parent: pg.layer.getGuideLayer()
 				});
 			}
 			
@@ -334,7 +335,8 @@ pg.tools.select = function() {
 						noHover: true
 					},
 					size: [size/paper.view.zoom,size/paper.view.zoom],
-					fillColor: '#009dec'
+					fillColor: pg.guides.getGuideColor('blue'),
+					parent: pg.layer.getGuideLayer()
 				});
 		});
 	};
@@ -345,21 +347,6 @@ pg.tools.select = function() {
 		boundsPath = null;
 		boundsScaleHandles.length = 0;
 		boundsRotHandles.length = 0;
-	};
-	
-	
-	var removeBoundsHandler = function() {
-		for(var i=0; i<paper.project.layers.length; i++) {
-			var layer = paper.project.layers[i];
-			for(var j=0; j<layer.children.length; j++) {
-				var child = layer.children[j];
-				// only give guides
-				if(child.data && (child.data.isScaleHandle || child.data.isRotHandle)) {
-					child.remove();
-					j--;
-				}
-			}
-		}
 	};
 	
 	

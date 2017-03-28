@@ -22,7 +22,7 @@ pg.tools.detailSelect = function() {
 			handles: true,
 			fill: true,
 			guide: false,
-			tolerance: 5
+			tolerance: 5 / paper.view.zoom
 		};
 		
 		var doRectSelection = false;

@@ -37,7 +37,7 @@ pg.group = function() {
 	var ungroupLoop = function(group, recursive) {
 		// don't ungroup items that are no groups
 		if(!group || !group.children || !isGroup(group)) return;
-		
+				
 		group.applyMatrix = true;
 		// iterate over group children recursively
 		for(var i=0; i<group.children.length; i++) {
@@ -49,14 +49,14 @@ pg.group = function() {
 					ungroupLoop(groupChild, true);
 				} else {
 					groupChild.applyMatrix = true;
-					paper.project.activeLayer.addChild(groupChild);
+					group.layer.addChild(groupChild);
 					i--;
 				}
 
 			} else {
 				groupChild.applyMatrix = true;
 				// move items from the group to the activeLayer (ungrouping)
-				paper.project.activeLayer.addChild(groupChild);
+				group.layer.addChild(groupChild);
 				i--;
 			}
 		}

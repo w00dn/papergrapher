@@ -57,16 +57,15 @@ pg.compoundPath = function() {
 				
 				for(var j=0; j<item.children.length; j++) {
 					var path = item.children[j];
-					path.parent = paper.project.activeLayer;
+					path.parent = item.layer;
 					pg.selection.setItemSelection(path, true);
 					j--;
 				}
-				//console.log('cpath:', item);
 				cPathsToDelete.push(item);
 				pg.selection.setItemSelection(item, false);
 				
 			} else {
-				items[i].parent = paper.project.activeLayer;
+				items[i].parent = item.layer;
 			}
 		}
 		
@@ -82,6 +81,6 @@ pg.compoundPath = function() {
 		isCompoundPathChild: isCompoundPathChild,
 		getItemsCompoundPath: getItemsCompoundPath,
 		createFromSelection: createFromSelection,
-		releaseSelection: releaseSelection,
+		releaseSelection: releaseSelection
 	};
 }();

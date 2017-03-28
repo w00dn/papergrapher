@@ -83,14 +83,14 @@ pg.toolOptionPanel = function() {
 			$options.append($optionSection);
 		});
 
-		var $resetButton = $('<button class="toolOptionResetButton">Reset</button>').click(function() {
+		var $resetButton = $('<button class="toolOptionResetButton" title="Reset Tool Settings">R</button>').click(function() {
 			if(confirm('Reset tool options to default?')) {
 				pg.tools.deleteLocalOptions(options.name);
 				pg.toolbar.switchTool(pg.tools.newToolByName(options.name), true);
 			}
 		});
-
-		$panel.append($title, $options, $resetButton);
+		$title.append($resetButton);
+		$panel.append($title, $options);
 		jQuery('body').append($panel);
 		$panel.draggable();
 		processInputRequirements();
@@ -100,7 +100,6 @@ pg.toolOptionPanel = function() {
 			jQuery.each(components, function(reqid, comp){
 				if(comp.requirements) {
 					jQuery.each(comp.requirements, function(reqkey, req){
-						console.log(reqkey, req);
 						var $el = jQuery('.option-section[data-id="'+reqid+'"]');
 						if(options[reqkey] == req) {
 							$el.removeClass('hidden');

@@ -5,6 +5,11 @@ pg.view = function() {
 	
 	var zoomBy = function(factor) {
 		paper.view.zoom *= factor;
+		if(paper.view.zoom <= 0.01) {
+			paper.view.zoom = 0.01;
+		} else if(paper.view.zoom >= 1000) {
+			paper.view.zoom = 1000;
+		}
 		pg.toolbar.updateZoom();
 	};
 	

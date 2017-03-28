@@ -9,6 +9,8 @@ var pg = function() {
 		
 		pg.document.setup();
 		
+		pg.layer.setup();
+		
 		pg.export.setup();
 
 		pg.menu.setup();

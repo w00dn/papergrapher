@@ -24,7 +24,7 @@ pg.tools.bezier = function() {
 			stroke: true,
 			curves: true,
 			guide: false,
-			tolerance: 5
+			tolerance: 5 / paper.view.zoom
 		};
 		
 		tool.onMouseDown = function(event) {

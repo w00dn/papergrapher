@@ -2,20 +2,30 @@
 pg.document = function() {
 	var center;
 	var clipboard = [];
-	
+
 	
 	var setup = function() {
 		paper.view.center = new paper.Point(0,0);
 		center = paper.view.center;
+		
+		// call DocumentUpdate at a reduced rate (every tenth frame)
+		var int = 10;
+		paper.view.onFrame = function() {
+			if(int > 0) {
+				int--;
+			} else {
+				jQuery(document).trigger('DocumentUpdate');
+				int = 10;
+			}
+		};
 	};
 	
 	
 	var clear = function() {
 		paper.project.clear();
-		paper.view.center = center;
-		paper.view.zoom = 1;
 		pg.undo.clear();
-		var layer = new paper.Layer();
+		setup();
+		pg.layer.setup();
 	};
 	
 	
@@ -47,17 +57,15 @@ pg.document = function() {
 		pg.export.setExportRect();
 		
 		jQuery.getJSON( file, function( data ) {
-			
 			paper.project.importJSON(data);
-			
 			jQuery.each(paper.project.layers, function(index, layer) {
-				
 				jQuery.each(layer.children, function(index, obj) {
 					if(obj && obj.data && obj.data.isExportRect) {
-						pg.export.setExportRect(new paper.Rectangle(obj.bounds));
+						pg.export.setExportRect(new paper.Rectangle(obj.data.exportRectBounds));
 					}
 				});
 			});
+			pg.layerPanel.updateLayerList();
 			paper.view.update();
 			pg.undo.snapshot('loadJSONDocument');
 
@@ -70,10 +78,18 @@ pg.document = function() {
 
 		if (fileName !== null) {
 			pg.hover.clearHoveredItem();
+			
+			// backup guide items, then remove them before export
+			var guideItems = pg.guides.getAllGuides();
+			pg.guides.removeAllGuides();
+			
 			var fileNameNoExtension = fileName.split(".json")[0];
 			var exportData = paper.project.exportJSON({ asString: true });
 			var blob = new Blob([exportData], {type: "text/json"});
 			saveAs(blob, fileNameNoExtension+'.json');
+			
+			// restore guide items after export
+			pg.layer.getGuideLayer().addChildren(guideItems);
 		}
 	};
 	

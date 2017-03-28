@@ -2,11 +2,13 @@
 
 pg.tools.exportrect = function() {
 	var tool;
-	var path;
 	var rect;
+	var outerRect;
+	
+	var compoundPath;
 	
 	var options = {
-		name: 'ExportRect',
+		name: 'ExportArea',
 		posX: -100,
 		posY: -100,
 		width: 200,
@@ -37,7 +39,10 @@ pg.tools.exportrect = function() {
 	
 	var activateTool = function() {
 		tool = new Tool();
+				
 		
+		
+		// if no options are set, try to get the current rect
 		if(pg.export.getExportRect()) {
 			options.posX = pg.export.getExportRect().x;
 			options.posY = pg.export.getExportRect().y;
@@ -48,9 +53,9 @@ pg.tools.exportrect = function() {
 			options = pg.tools.getLocalOptions(options);
 		}
 		
+		outerRect = new Rectangle(-500000, -500000, 1000000, 1000000);
 		rect = new Rectangle(options.posX, options.posY, options.width, options.height);
 		drawRect();
-		
 		pg.export.setExportRect(rect);
 		
 		tool.onMouseDrag = function(event) {
@@ -78,19 +83,31 @@ pg.tools.exportrect = function() {
 			
 			pg.export.setExportRect(rect);
 			
+			pg.tools.setLocalOptions(options);
+			
 			pg.undo.snapshot('exportrectangle');	
 		};
 		
 		// setup floating tool options panel in the editor
-		var $panel = pg.toolOptionPanel.setup(options, components, function() {
+		pg.toolOptionPanel.setup(options, components, function() {
 			rect = new Rectangle(options.posX, options.posY, options.width, options.height);
 			pg.export.setExportRect(rect);
 			drawRect();
 		});
 		
-		// override reset button functionality, as this is a special case
+		// override reset button... hacky...
+		jQuery('.toolOptionResetButton').unbind('click').click(function() {
+			if(confirm('Reset tool options to default?')) {
+				pg.tools.deleteLocalOptions(options.name);
+				pg.export.clearExportRect();
+				pg.toolbar.switchTool(pg.tools.newToolByName(options.name), true);
+			}
+		});
+		
 		// this removes the export area from the document as if it never existed
-		$panel.find('.toolOptionResetButton').text('Remove').unbind('click').click(function() {
+		var $optionSection = jQuery('<div class="option-section" data-id="remove">');
+		var $removeButton = jQuery('<button title="Remove Export Area">Remove</button>');
+		$removeButton.click(function() {
 			if(confirm('Remove export area?')) {
 				pg.export.clearExportRect();
 				pg.guides.removeExportRectGuide();
@@ -98,23 +115,26 @@ pg.tools.exportrect = function() {
 				pg.toolbar.setDefaultTool();
 			}
 		});
+		$optionSection.append($removeButton);
+		jQuery('.palettejs-panel .options').append($optionSection);
 		
 		tool.activate();
 	};
 	
 	var drawRect = function() {
 		pg.guides.removeExportRectGuide();
-		path = new Path.Rectangle(rect);
-		processPath();
-		
-	};
-	
-	var processPath = function() {
-		path.guide = true;
-		path.data.isExportRect = true;
-		path.strokeWidth = 1.0 / paper.view.zoom;
-		path.strokeColor = new Color(0.8, 0.8, 0.8);
-		path.dashArray = [2 / paper.view.zoom, 4 / paper.view.zoom];
+		compoundPath = new paper.CompoundPath({
+			children: [ new Path.Rectangle(rect), new Path.Rectangle(outerRect) ],
+			fillRule: 'evenodd',
+			fillColor: 'black',
+			opacity: 0.2,
+			guide: true,
+			data: {
+				isExportRect: true,
+				exportRectBounds : rect
+			},
+			parent: pg.layer.getGuideLayer()
+		});
 	};
 	
 	

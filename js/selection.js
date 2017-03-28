@@ -68,6 +68,7 @@ pg.selection = function() {
 		pg.style.blurInputs();
 		pg.hover.clearHoveredItem();
 		pg.settingsbar.hideSection();
+		jQuery(document).trigger('SelectionChanged');
 	};
 	
 
@@ -256,6 +257,8 @@ pg.selection = function() {
 		pg.settingsbar.update(item);
 		pg.style.updateFromSelection();
 		pg.style.blurInputs();
+		
+		jQuery(document).trigger('SelectionChanged');
 		
 	};
 

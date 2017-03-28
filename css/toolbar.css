@@ -89,8 +89,8 @@
 .palettejs-panel {
 	position: absolute;
 	top: 74px;
-	left: 92px;
-	background-color: #ddd;
+	left: 90px;
+	background-color: #fff;
 	padding: 10px;
 	border-radius: 0 0 3px 3px;
 }
@@ -109,11 +109,10 @@
 
 .palettejs-panel h3 {
 	font-size: 0.85em;
-	margin: -10px -10px 6px -10px;
+	margin: -7px -10px 6px -10px;
 	padding: 5px 10px;
 	cursor: move;
 	color: #999;
-	background-color: #eee;
 }
 
 .palettejs-panel input[type=number] {
@@ -148,4 +147,15 @@
 
 .palettejs-panel button {
 	width: 100%;
+}
+
+.palettejs-panel .toolOptionResetButton {
+	position: absolute;
+	width: 16px;
+	height: 16px;
+	top: 7px;
+	right: 10px;
+	text-align: center;
+	padding: 1px;
+	line-height: 0;
 }

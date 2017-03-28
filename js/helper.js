@@ -74,6 +74,18 @@ pg.helper = function() {
 		}
 		return allItems;
 	};
+		
+	
+	var getPaperItemsByLayerID = function(id) {
+		var allItems = getAllPaperItems(false);
+		var foundItems = [];
+		jQuery.each(allItems, function(index, item) {
+			if(item.layer.id == id) {
+				foundItems.push(item);
+			}
+		});
+		return foundItems;
+	};
 	
 	
 	var getPaperItemsByTags = function(tags) {
@@ -88,8 +100,8 @@ pg.helper = function() {
 		});
 		return foundItems;
 	};
-	
-	
+
+
 	var removePaperItemsByDataTags = function(tags) {
 		var allItems = getAllPaperItems(true);
 		jQuery.each(allItems, function(index, item) {
@@ -118,6 +130,7 @@ pg.helper = function() {
 		selectedItemsToJSONString: selectedItemsToJSONString,
 		checkFileType: checkFileType,
 		getAllPaperItems: getAllPaperItems,
+		getPaperItemsByLayerID: getPaperItemsByLayerID,
 		getPaperItemsByTags: getPaperItemsByTags,
 		removePaperItemsByDataTags: removePaperItemsByDataTags,
 		removePaperItemsByTags: removePaperItemsByTags

@@ -57,11 +57,13 @@
 					<li class="group_button">Group</li>
 					<li class="ungroup_button">Ungroup</li>
 					<hr />
-					<li class="bringToFront_button">Bring to Front</li>
-					<li class="sendToBack_button">Send to Back</li>
+					<li class="sendToActiveLayer_button">Send to active layer</li>
 					<hr />
-					<li class="createCompoundPath_button">Create Compound Path</li>
-					<li class="releaseCompoundPath_button">Release Compound Path</li>
+					<li class="bringToFront_button">Bring to front</li>
+					<li class="sendToBack_button">Send to fack</li>
+					<hr />
+					<li class="createCompoundPath_button">Create compound path</li>
+					<li class="releaseCompoundPath_button">Release compound path</li>
 				</ul>
 			</li>
 			<li class="topMenuButton">Select
@@ -74,15 +76,16 @@
 			
 			<li class="topMenuButton">View
 				<ul class="subMenu" id="viewSubMenu">
-					<li class="zoomIn_button" title="Alt-ScrollUp">Zoom In</li>
-					<li class="zoomOut_button" title="Alt-ScrollDown">Zoom Out</li>
-					<li class="resetZoom_button" title="Ctrl-1">Reset Zoom</li>
-					<li class="resetPan_button">Reset Pan</li>
+					<li class="zoomIn_button" title="Alt-ScrollUp">Zoom in</li>
+					<li class="zoomOut_button" title="Alt-ScrollDown">Zoom out</li>
+					<li class="resetZoom_button" title="Ctrl-1">Reset zoom</li>
+					<li class="resetPan_button">Reset pan</li>
 				</ul>
 			</li>
 			
 			<li class="topMenuButton">Window
 				<ul class="subMenu" id="windowSubMenu">
+					<li class="layerPanelButton" title="Layer Panel">Layers</li>
 					<li class="scriptEditorButton" title="Script Editor">Script Editor</li>
 				</ul>
 			</li>
@@ -113,7 +116,7 @@
 			<div class="tool_Rotate tool" data-name="Rotate" title="Rotate (R)"></div>
 			<div class="tool_Scale tool" data-name="Scale" title="Scale (S)"></div>
 			<div class="tool_Zoom tool" data-name="Zoom" title="Zoom (Z)"></div>
-			<div class="tool_ExportRect tool" data-name="ExportRect" title="Export area"></div>
+			<div class="tool_ExportArea tool" data-name="ExportArea" title="Export Area"></div>
 		</div>
 		
 		<!-- Color Container -->
@@ -279,7 +282,7 @@
 			<ul class="topMenu">
 				<li id="runScriptButton" class="runScriptButton">Run</li>
 				<li id="closeScriptButton" class="closeScriptButton">Close</li>
-				<li id="clearConsoleButton" class="clearConsoleButton">Clear Console</li>
+				<li id="clearConsoleButton" class="clearConsoleButton">Clear console</li>
 			</ul>
 		</nav>
 		<textarea id="codeEditorArea" class="codeEditorArea">console.log('Hello World!');</textarea>
@@ -325,6 +328,7 @@
 	<script src="js/input.js"></script>
 	<script src="js/guides.js"></script>
 	<script src="js/toolbar.js"></script>
+	<script src="js/layerPanel.js"></script>
 	<script src="js/settingsbar.js"></script>
 	<script src="js/style.js"></script>
 	<script src="js/tools.js"></script>

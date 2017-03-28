@@ -17,7 +17,7 @@ pg.tools.eyedropper = function() {
 			curves: true,
 			fill: true,
 			guide: false,
-			tolerance: 5
+			tolerance: 5 / paper.view.zoom
 		};
 		
 		tool.onMouseDown = function(event) {

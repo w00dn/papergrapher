@@ -1,7 +1,11 @@
 
 pg.codeEditor = function(){
 	
+	var $codeEditor;
+	
 	var setup = function() {
+		$codeEditor = jQuery('#codeEditorContainer');
+		
 		jQuery('#runScriptButton').click(function() {
 			cleanup();
 			runScript();
@@ -9,7 +13,7 @@ pg.codeEditor = function(){
 		
 		jQuery('#closeScriptButton').click(function() {
 			cleanup();
-			jQuery('#codeEditorContainer').hide();
+			jQuery('#codeEditorContainer').addClass('hidden');
 		});
 		
 		jQuery('#clearConsoleButton').click(function() {
@@ -19,23 +23,33 @@ pg.codeEditor = function(){
 	};
 	
 	
-	var show = function() {
-		if(loadEditorResources()) {
-			jQuery('#codeEditorContainer').draggable();
-			jQuery('#codeEditorContainer').css({'position':'absolute'});
-			jQuery('#codeEditorContainer').show();
+	var toggleVisibility = function() {
 		
-			(function () {
-				var log = console.log;
-				console.log = function () {
-					//log.call(this, 'My Console!!!');
-					var args = Array.prototype.slice.call(arguments);
-					if(args[0] !== 'key') {
-						jQuery('#consoleOutput').append('<span class="message">' + args + '</span>').scrollTop(99999);
-					}
-					log.apply(this, args);
-				};
-			}());
+		if($codeEditor.hasClass('hidden')) {
+			if(loadEditorResources()) {
+				$codeEditor.draggable({
+					containment: "parent",
+					handle: jQuery('.codeEditorButtons')
+				});
+				$codeEditor.css({'position':'absolute'});
+				$codeEditor.removeClass('hidden');
+
+				(function () {
+					var log = console.log;
+					console.log = function () {
+						//log.call(this, 'My Console!!!');
+						var args = Array.prototype.slice.call(arguments);
+						if(args[0] !== 'key') {
+							jQuery('#consoleOutput').append('<span class="message">' + args + '</span>').scrollTop(99999);
+						}
+						log.apply(this, args);
+					};
+				}());
+			}
+			
+		} else {
+			cleanup();
+			$codeEditor.addClass('hidden');
 		}
 	};
 
@@ -105,7 +119,7 @@ pg.codeEditor = function(){
 	
 	return {
 		setup: setup,
-		show: show
+		toggleVisibility: toggleVisibility
 	};
 
 }();

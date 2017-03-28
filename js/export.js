@@ -57,7 +57,8 @@ pg.export = function() {
 				});
 
 				// restore guide items after export
-				paper.project.activeLayer.addChildren(guideItems);
+				pg.layer.getGuideLayer().addChildren(guideItems);
+				
 				$tempCanvas.remove();
 				
 			} else {
@@ -88,7 +89,7 @@ pg.export = function() {
 			saveAs(blob, fileNameNoExtension+'.svg');
 			
 			// restore guide items after export
-			paper.project.activeLayer.addChildren(guideItems);
+			pg.layer.getGuideLayer().addChildren(guideItems);
 		}
 	};
 	

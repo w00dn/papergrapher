@@ -33,7 +33,7 @@ pg.edit = function() {
 	
 	return {
 		copySelectionToClipboard:copySelectionToClipboard,
-		pasteObjectsFromClipboard:pasteObjectsFromClipboard,
+		pasteObjectsFromClipboard:pasteObjectsFromClipboard
 	};
 	
 }();

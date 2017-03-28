@@ -94,7 +94,6 @@ pg.style = function() {
 	
 	
 	var setStrokeWidth = function(value, triggerChange) {
-		//console.log('settin stroke to:', value);
 		var $input = jQuery('#strokeInput');
 		$input.val(value);
 		

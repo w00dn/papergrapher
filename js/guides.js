@@ -5,11 +5,12 @@ pg.guides = function() {
 	var guideBlue = '#009dec';
 	var guideGrey = '#aaaaaa';
 	
-	
 	var hoverItem = function(hitResult) {
-		var clone = hitResult.item.clone();
+		var segments = hitResult.item.segments;
+		var clone = new paper.Path(segments);
 		setDefaultGuideStyle(clone);
-		clone.parent = paper.project.activeLayer;
+		clone.closed = true;
+		clone.parent = pg.layer.getGuideLayer();
 		clone.strokeColor = guideBlue;
 		clone.fillColor = null;
 		clone.data.isHelperItem = true;
@@ -23,6 +24,7 @@ pg.guides = function() {
 		var rect = new paper.Path.Rectangle(hitResult.item.internalBounds);
 		rect.matrix = hitResult.item.matrix;
 		setDefaultGuideStyle(rect);
+		rect.parent = pg.layer.getGuideLayer();
 		rect.strokeColor = guideBlue;
 		rect.fillColor = null;
 		rect.data.isHelperItem = true;
@@ -40,6 +42,7 @@ pg.guides = function() {
 		var zoom = 1.0/paper.view.zoom;
 		setDefaultGuideStyle(rect);
 		if(!color) color = guideGrey;
+		rect.parent = pg.layer.getGuideLayer();
 		rect.strokeColor = color;
 		rect.data.isRectSelect = true;
 		rect.data.isHelperItem = true;
@@ -53,6 +56,7 @@ pg.guides = function() {
 		var zoom = 1/paper.view.zoom;
 		setDefaultGuideStyle(line);
 		if (!color) color = guideGrey;
+		line.parent = pg.layer.getGuideLayer();
 		line.strokeColor = color;
 		line.strokeColor = color;
 		line.dashArray = [5*zoom, 5*zoom];
@@ -66,6 +70,7 @@ pg.guides = function() {
 		var star = new paper.Path.Star(center, 4, 4*zoom, 0.5*zoom);
 		setDefaultGuideStyle(star);
 		if(!color) color = guideBlue;
+		star.parent = pg.layer.getGuideLayer();
 		star.fillColor = color;
 		star.strokeColor = color;
 		star.strokeWidth = 0.5*zoom;
@@ -81,6 +86,7 @@ pg.guides = function() {
 		var path = new paper.Path.Circle(center, 3*zoom);
 		setDefaultGuideStyle(path);
 		if(!color) color = guideBlue;
+		path.parent = pg.layer.getGuideLayer();
 		path.fillColor = color;
 		path.data.isHelperItem = true;
 
@@ -91,6 +97,7 @@ pg.guides = function() {
 	var label = function(pos, content, color) {
 		var text = new paper.PointText(pos);
 		if(!color) color = guideGrey;
+		text.parent = pg.layer.getGuideLayer();
 		text.fillColor = color;
 		text.content = content;
 	};
@@ -103,7 +110,15 @@ pg.guides = function() {
 		item.guide = true;
 	};
 	
-		
+	
+	var getGuideColor = function(colorName) {
+		if(colorName == 'blue') {
+			return guideBlue;
+		} else if(colorName == 'grey') {
+			return guideGrey;
+		}
+	};
+	
 	
 	var getAllGuides = function() {
 		var allItems = [];
@@ -149,6 +164,7 @@ pg.guides = function() {
 		removeHelperItems: removeHelperItems,
 		removeExportRectGuide: removeExportRectGuide,
 		getAllGuides: getAllGuides,
+		getGuideColor: getGuideColor,
 		setDefaultGuideStyle:setDefaultGuideStyle
 	};
 

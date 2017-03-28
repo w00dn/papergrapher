@@ -21,14 +21,6 @@ pg.tools.zoom = function() {
 			
 		};
 		
-		tool.onMouseDrag = function(event) {
-			if(event.event.button > 0) return; // only first mouse button
-			
-			if(doRectZoom) {
-				//console.log('draggin zoom rect');
-			}
-		};
-		
 		tool.onMouseUp = function(event) {
 			if(event.event.button > 0) return; // only first mouse button
 			
@@ -36,9 +28,8 @@ pg.tools.zoom = function() {
 			if (event.modifiers.option) {
 				factor = 1 / factor;
 			}
-			paper.view.zoom *= factor;
+			pg.view.zoomBy(factor);
 			paper.view.center = event.point;
-			pg.toolbar.updateZoom();
 		};
 		
 		var keyDownFired = false;
