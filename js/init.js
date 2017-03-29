@@ -33,6 +33,8 @@ var pg = function() {
 	
 }();
 
+jQuery.ajaxSetup({ cache: false });
+
 // set pg up on window load
 jQuery( window ).load(function() {
 	pg.init();
