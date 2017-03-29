@@ -9,7 +9,9 @@ pg.guides = function() {
 		var segments = hitResult.item.segments;
 		var clone = new paper.Path(segments);
 		setDefaultGuideStyle(clone);
-		clone.closed = true;
+		if(hitResult.item.closed) {
+			clone.closed = true;
+		}
 		clone.parent = pg.layer.getGuideLayer();
 		clone.strokeColor = guideBlue;
 		clone.fillColor = null;
