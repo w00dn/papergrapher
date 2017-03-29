@@ -49,47 +49,38 @@ pg.document = function() {
 		clipboard = [];
 		return true;
 	};
-
 	
-	var loadJSONDocument = function(file) {
+	
+	var loadJSONDocument = function(jsonString) {
 		paper.project.clear();
 		pg.toolbar.setDefaultTool();
 		pg.export.setExportRect();
+
+		paper.project.importJSON(jsonString);
 		
-		jQuery.getJSON( file, function( data ) {
-			paper.project.importJSON(data);
-			jQuery.each(paper.project.layers, function(index, layer) {
-				jQuery.each(layer.children, function(index, obj) {
-					if(obj && obj.data && obj.data.isExportRect) {
-						pg.export.setExportRect(new paper.Rectangle(obj.data.exportRectBounds));
-					}
-				});
-			});
-			pg.layerPanel.updateLayerList();
-			paper.view.update();
-			pg.undo.snapshot('loadJSONDocument');
-
-		});
+		var exportRect = pg.guides.getExportRectGuide();
+		if(exportRect) {
+			pg.export.setExportRect(new paper.Rectangle(exportRect.data.exportRectBounds));
+		}
+		
+		pg.layerPanel.updateLayerList();
+		paper.view.update();
+		pg.undo.snapshot('loadJSONDocument');
 	};
-
+	
 	
 	var saveJSONDocument = function() {
 		var fileName = prompt("Name your file", "export.json");
 
 		if (fileName !== null) {
 			pg.hover.clearHoveredItem();
-			
-			// backup guide items, then remove them before export
-			var guideItems = pg.guides.getAllGuides();
-			pg.guides.removeAllGuides();
+			pg.selection.clearSelection();
+			paper.view.update();
 			
 			var fileNameNoExtension = fileName.split(".json")[0];
 			var exportData = paper.project.exportJSON({ asString: true });
 			var blob = new Blob([exportData], {type: "text/json"});
 			saveAs(blob, fileNameNoExtension+'.json');
-			
-			// restore guide items after export
-			pg.layer.getGuideLayer().addChildren(guideItems);
 		}
 	};
 	

@@ -137,6 +137,16 @@ pg.guides = function() {
 	};
 	
 	
+	var getExportRectGuide = function() {
+		var guides = getAllGuides();
+		for(var i=0; i<guides.length; i++){
+			if(guides[i].data && guides[i].data.isExportRect) {
+				return guides[i];
+			}
+		}
+	};
+	
+	
 	var removeHelperItems = function() {
 		pg.helper.removePaperItemsByDataTags(['isHelperItem']);
 	};
@@ -164,6 +174,7 @@ pg.guides = function() {
 		removeHelperItems: removeHelperItems,
 		removeExportRectGuide: removeExportRectGuide,
 		getAllGuides: getAllGuides,
+		getExportRectGuide: getExportRectGuide,
 		getGuideColor: getGuideColor,
 		setDefaultGuideStyle:setDefaultGuideStyle
 	};

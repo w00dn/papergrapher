@@ -4,6 +4,7 @@ pg.export = function() {
 	var exportRect;
 	var canvas;
 	
+	
 	var setup = function() {
 		canvas = document.getElementById("paperCanvas");
 	};
@@ -25,17 +26,19 @@ pg.export = function() {
 	
 	
 	var exportAndPromptImage = function() {
-		var fileName = prompt("Name your file", "export.png");
+		var fileName = prompt("Name your file", "export");
 
 		if (fileName !== null) {
 			pg.hover.clearHoveredItem();
+			pg.selection.clearSelection();
+			
+			// backup guide layer, then remove it (with all children) before export
+			var guideLayer = pg.layer.getGuideLayer();
+			var guideLayerBackup = guideLayer.exportJSON();
+			guideLayer.remove();
+			paper.view.update();
 			
 			if(exportRect) {
-				
-				// backup guide items, then remove them before export
-				var guideItems = pg.guides.getAllGuides();
-				pg.guides.removeAllGuides();
-				
 				pg.view.resetZoom();
 				pg.view.resetPan();
 				paper.view.update();
@@ -54,42 +57,51 @@ pg.export = function() {
 				context.putImageData(imgData,0,0);
 				$tempCanvas[0].toBlob(function(blob) {
 					saveAs(blob, fileNameNoExtension+'.png');
+						
+					// restore guide layer (with all items) after export
+					paper.project.importJSON(guideLayerBackup);
 				});
 
-				// restore guide items after export
-				pg.layer.getGuideLayer().addChildren(guideItems);
 				
 				$tempCanvas.remove();
 				
 			} else {
-				pg.hover.clearHoveredItem();
 				var fileNameNoExtension = fileName.split(".png")[0];
 				canvas.toBlob(function(blob) {
 					saveAs(blob, fileNameNoExtension+'.png');
+					
+					// restore guide layer (with all items) after export
+					paper.project.importJSON(guideLayerBackup);
 				});
 			}
+			
+			
 		}
 	};
 	
 	
 	var exportAndPromptSVG = function() {
-		var fileName = prompt("Name your file", "export.svg");
+		var fileName = prompt("Name your file", "export");
 
 		if (fileName !== null) {
 			pg.hover.clearHoveredItem();
+			pg.selection.clearSelection();
+			
 			var fileNameNoExtension = fileName.split(".svg")[0];
 			
-			// backup guide items, then remove them before export
-			var guideItems = pg.guides.getAllGuides();
-			pg.guides.removeAllGuides();
+			// backup guide layer, then remove it (with all children) before export
+			var guideLayer = pg.layer.getGuideLayer();
+			var guideLayerBackup = guideLayer.exportJSON();
+			guideLayer.remove();
+			paper.view.update();
 			
 			// export data, create blob  and save as file on users device
 			var exportData = paper.project.exportSVG({ asString: true, bounds: exportRect });
 			var blob = new Blob([exportData], {type: "image/svg+xml;charset=" + document.characterSet});
 			saveAs(blob, fileNameNoExtension+'.svg');
 			
-			// restore guide items after export
-			pg.layer.getGuideLayer().addChildren(guideItems);
+			// restore guide layer (with all items) after export
+			paper.project.importJSON(guideLayerBackup);
 		}
 	};
 	

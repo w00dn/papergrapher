@@ -126,6 +126,22 @@ pg.helper = function() {
 	};
 	
 	
+	var processFileInput = function (dataType ,input, callback) {
+		var reader = new FileReader();
+		
+		if(dataType == 'text') {
+			reader.readAsText(input.files[0]);
+			
+		} else if(dataType == 'dataURL') {
+			reader.readAsDataURL(input.files[0]);
+		}
+		
+		reader.onload = function () {
+			callback(reader.result);
+		};
+	};
+	
+	
 	return {
 		selectedItemsToJSONString: selectedItemsToJSONString,
 		checkFileType: checkFileType,
@@ -133,7 +149,8 @@ pg.helper = function() {
 		getPaperItemsByLayerID: getPaperItemsByLayerID,
 		getPaperItemsByTags: getPaperItemsByTags,
 		removePaperItemsByDataTags: removePaperItemsByDataTags,
-		removePaperItemsByTags: removePaperItemsByTags
+		removePaperItemsByTags: removePaperItemsByTags,
+		processFileInput:processFileInput
 	};
 	
 }();

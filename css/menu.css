@@ -72,7 +72,9 @@
 	margin-left: 1em;
 }
 
-.appNav hr {
+.appNav li.space {
+	margin: 0.5em 0;
+	padding: 0;
 	height: 0;
 	border: 0;
 	border-top: 1px solid #555;

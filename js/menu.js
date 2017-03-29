@@ -87,49 +87,36 @@ pg.menu = function() {
 			}
 		});
 
-		// import click handler on hidden file input in menu
-		jQuery('#fileUploadSVG').fileupload({
-			dataType: 'json',
-			acceptFileTypes : /(\.|\/)(svg)$/i,
-			done: function (e, data) {
-				jQuery.each(data.result.files, function (index, file) {
-					pg.import.importAndAddSVG(file.url);
-				});
-			}
+		// handle change on hidden file input in menu item
+		jQuery('#fileUploadSVG').on('change', function(event) {
+			pg.helper.processFileInput('text', event.target, function(data) {
+				pg.import.importAndAddSVG(data);
+			});
 		});
 		
-		// import click handler on hidden file input in menu
-		jQuery('#fileUploadJSON').fileupload({
-			dataType: 'json',
-			acceptFileTypes : /(\.|\/)(json)$/i,
-			done: function (e, data) {
-				jQuery.each(data.result.files, function (index, file) {
-					pg.document.loadJSONDocument(file.url);
-				});
-			}
+		// handle change on hidden file input in menu item
+		jQuery('#fileUploadJSON').on('change', function(event) {
+			pg.helper.processFileInput('text', event.target, function(data) {
+				pg.document.loadJSONDocument(data);
+			});
 		});
 		
-		// import click handler on hidden file input in menu
-		jQuery('#fileUploadImage').fileupload({
-			dataType: 'json',
-			acceptFileTypes : /(\.|\/)(jpg|jpeg|gif|png)$/i,
-			done: function (e, data) {
-				jQuery.each(data.result.files, function (index, file) {
-					pg.import.importAndAddImage(file.url);
-				});
-			}
+		// handle change on hidden file input in menu item
+		jQuery('#fileUploadImage').on('change', function(event) {
+			pg.helper.processFileInput('dataURL', event.target, function(dataURL) {
+				pg.import.importAndAddImage(dataURL);
+			});
 		});
 		
-		jQuery('.importSVGFromURL_button').click(function() {
+		jQuery('.importSVGFromURL_button').click(function () {
 			var fileName = prompt("Paste URL to SVG", "http://");
-			
-			if(fileName) {
+			if (fileName) {
 				jQuery.ajax({
-					url:      fileName,
+					url: fileName,
 					dataType: 'text',
-					type:     'GET',
-					complete:  function(xhr){
-						if(xhr.status === 200) {
+					type: 'GET',
+					complete: function (xhr) {
+						if (xhr.status === 200) {
 							pg.import.importAndAddSVG(fileName);
 						} else {
 							alert("SVG couldn't be retrieved from the specified URL.");
@@ -137,17 +124,13 @@ pg.menu = function() {
 					}
 				});
 			}
-			
 		});
-		
 		
 		jQuery('.importImageFromURL_button').click(function() {
 			var fileName = prompt("Paste URL to Image (jpg, png, gif)", "http://");
-			
 			if(fileName) {
 				pg.import.importAndAddImage(fileName);
 			}
-			
 		});
 		
 		jQuery('.exportJSON_button').click(function() {

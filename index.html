@@ -16,7 +16,7 @@
 
 </head>
 <body>
-	<canvas id="paperCanvas" resize></canvas>
+	<canvas id="paperCanvas" data-paper-resize="true"></canvas>
 	
 	<div id="loadingScreen" class="loadingScreen">
 		<div class="panel">Loading...</div>
@@ -28,17 +28,17 @@
 			<li class="topMenuButton">File
 				<ul class="subMenu" id="fileSubMenu">
 					<li class="clearDocument_button">New</li>
-					<li class="importJSON_button">Open<input id="fileUploadJSON" class="fileUploadInput" type="file" data-url="import/"></li>
+					<li class="importJSON_button">Open<input id="fileUploadJSON" class="fileUploadInput" type="file" accept=".json" ></li>
 					<li class="exportJSON_button">Save</li>
-					<hr />
-					<li class="importImage_button">Import Image<input id="fileUploadImage" class="fileUploadInput" type="file" data-url="import/"></li>
+					<li class="space"></li>
+					<li class="importImage_button">Import Image<input id="fileUploadImage" class="fileUploadInput" type="file" accept=".gif, .jpg, .jpeg, .png" ></li>
 					<li class="importImageFromURL_button">Import Image from URL</li>
 					<li class="exportImage_button">Export Image</li>
-					<hr />
-					<li class="importSVG_button">Import SVG<input id="fileUploadSVG" class="fileUploadInput" type="file" data-url="import/"></li>
+					<li class="space"></li>
+					<li class="importSVG_button">Import SVG<input id="fileUploadSVG" class="fileUploadInput" type="file" accept=".svg" ></li>
 					<li class="importSVGFromURL_button">Import SVG from URL</li>
 					<li class="exportSVG_button">Export SVG</li>
-					<hr />
+					<li class="space"></li>
 					<li class="resetSettings_button">Reset Settings</li>
 				</ul>
 			</li>
@@ -46,7 +46,7 @@
 				<ul class="subMenu" id="editSubMenu">
 					<li class="undo_button">Undo</li>
 					<li class="redo_button">Redo</li>
-					<hr />
+					<li class="space"></li>
 					<li class="copyToClipboard_button">Copy</li>
 					<li class="pasteFromClipboard_button">Paste</li>
 					<li class="deleteSelection_button">Delete</li>
@@ -56,12 +56,12 @@
 				<ul class="subMenu" id="objectSubMenu">
 					<li class="group_button">Group</li>
 					<li class="ungroup_button">Ungroup</li>
-					<hr />
+					<li class="space"></li>
 					<li class="sendToActiveLayer_button">Send to active layer</li>
-					<hr />
+					<li class="space"></li>
 					<li class="bringToFront_button">Bring to front</li>
 					<li class="sendToBack_button">Send to fack</li>
-					<hr />
+					<li class="space"></li>
 					<li class="createCompoundPath_button">Create compound path</li>
 					<li class="releaseCompoundPath_button">Release compound path</li>
 				</ul>
@@ -297,15 +297,9 @@
 	<script src="js/lib/jquery-2.2.4.min.js"></script>
 	<script src="js/lib/jquery-ui.min.js"></script>
 	<script src="js/lib/jquery-extensions.js"></script>
-	
-	<script src="js/lib/importexport/filesaver.js"></script>
-	<script src="js/lib/importexport/canvas-toBlob.js"></script>
-	<script src="js/lib/importexport/jquery.iframe-transport.js"></script>
-	<script src="js/lib/importexport/jquery.fileupload.js"></script>
-	<script src="js/lib/importexport/jquery.fileupload-process.js"></script>
-	<script src="js/lib/importexport/jquery.fileupload-validate.js"></script>
-	
-	<script src="js/lib/colorpicker/spectrum.js"></script>
+	<script src="js/lib/filesaver.js"></script>
+	<script src="js/lib/canvas-toBlob.js"></script>
+	<script src="js/lib/spectrum.js"></script>
 	<script src="js/lib/jstorage.js"></script>
 	<script src="//ajax.googleapis.com/ajax/libs/webfont/1.5.3/webfont.js"></script>
 
@@ -341,30 +335,25 @@
 	<script src="js/codeEditor.js"></script>
 	
 	<!-- tools -->
-	<?php loadToolScripts(); ?>
+	<script src="js/tools/select.js" type="text/paperscript" canvas="paperCanvas"></script>
+	<script src="js/tools/detailselect.js" type="text/paperscript" canvas="paperCanvas"></script>
+	<script src="js/tools/draw.js" type="text/paperscript" canvas="paperCanvas"></script>
+	<script src="js/tools/bezier.js" type="text/paperscript" canvas="paperCanvas"></script>
+	<script src="js/tools/cloud.js" type="text/paperscript" canvas="paperCanvas"></script>
+	<script src="js/tools/broadbrush.js" type="text/paperscript" canvas="paperCanvas"></script>
+	<script src="js/tools/text.js" type="text/paperscript" canvas="paperCanvas"></script>
+	<script src="js/tools/eyedropper.js" type="text/paperscript" canvas="paperCanvas"></script>
+	<script src="js/tools/circle.js" type="text/paperscript" canvas="paperCanvas"></script>
+	<script src="js/tools/rectangle.js" type="text/paperscript" canvas="paperCanvas"></script>
+	<script src="js/tools/rotate.js" type="text/paperscript" canvas="paperCanvas"></script>
+	<script src="js/tools/scale.js" type="text/paperscript" canvas="paperCanvas"></script>
+	<script src="js/tools/zoom.js" type="text/paperscript" canvas="paperCanvas"></script>
+	<script src="js/tools/exportrect.js" type="text/paperscript" canvas="paperCanvas"></script>
+	<script src="js/tools/viewgrab.js" type="text/paperscript" canvas="paperCanvas"></script>
+	<script src="js/tools/viewzoom.js" type="text/paperscript" canvas="paperCanvas"></script>
+	
 	<!-- dev -->
 	<script src="js/dev.js"></script>
 
 </body>
 </html>
-
-<?php 
-	function loadToolScripts() {
-		$js = '';
-		$handle = opendir('js/tools');
-		$file = '';
-		// open the "js" directory
-		if ($handle) {
-			// list directory contents
-			while (false !== ($file = readdir($handle))) {
-				// only grab file names
-				if (is_file('js/tools/' . $file)) {
-					// insert HTML code for loading Javascript files
-					$js .= '<script src="js/tools/' . $file . '" type="text/paperscript" canvas="paperCanvas"></script>' . "\n";
-				}
-			}
-			closedir($handle);
-			echo $js;
-		}
-	}
-
