@@ -19,45 +19,6 @@ pg.helper = function() {
 	};
 	
 	
-	var checkFileType = function(file, fType) {
-		var ext = getFileExtension(file);
-		if(fType === 'Image') {
-			switch (ext.toLowerCase()) {
-			case 'jpg':
-			case 'jpeg':
-			case 'gif':
-			case 'png':
-				//etc
-				//console.log('Image',file);
-				return true;
-			}
-			
-		} else if(fType === 'SVG') {
-			switch (ext.toLowerCase()) {
-			case 'svg':
-				//console.log('SVG',file);
-				return true;
-			}
-			
-		} else if(fType === 'JSON') {
-			switch (ext.toLowerCase()) {
-			case 'json':
-				//console.log('JSON',file);
-				return true;
-			}
-			
-		}
-		alert('File type "'+ext+'" not supported.');
-		return false;
-	};
-	
-	
-	var getFileExtension = function(filename) {
-		var parts = filename.split('.');
-		return parts[parts.length - 1];
-	};
-
-	
 	var getAllPaperItems = function(includeGuides) {
 		includeGuides = includeGuides || false;
 		var allItems = [];
@@ -144,7 +105,6 @@ pg.helper = function() {
 	
 	return {
 		selectedItemsToJSONString: selectedItemsToJSONString,
-		checkFileType: checkFileType,
 		getAllPaperItems: getAllPaperItems,
 		getPaperItemsByLayerID: getPaperItemsByLayerID,
 		getPaperItemsByTags: getPaperItemsByTags,
