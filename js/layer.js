@@ -60,6 +60,7 @@ pg.layer = function() {
 		if(layer) {
 			layer.remove();
 		}
+		var defaultLayer = getDefaultLayer();
 		defaultLayer.activate();
 	};
 	
