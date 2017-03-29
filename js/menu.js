@@ -107,29 +107,18 @@ pg.menu = function() {
 				pg.import.importAndAddImage(dataURL);
 			});
 		});
-		
-		jQuery('.importSVGFromURL_button').click(function () {
-			var fileName = prompt("Paste URL to SVG", "http://");
-			if (fileName) {
-				jQuery.ajax({
-					url: fileName,
-					dataType: 'text',
-					type: 'GET',
-					complete: function (xhr) {
-						if (xhr.status === 200) {
-							pg.import.importAndAddSVG(fileName);
-						} else {
-							alert("SVG couldn't be retrieved from the specified URL.");
-						}
-					}
-				});
+				
+		jQuery('.importImageFromURL_button').click(function() {
+			var url = prompt("Paste URL to Image (jpg, png, gif)", "http://");
+			if(url) {
+				pg.import.importAndAddExternalImage(url);
 			}
 		});
 		
-		jQuery('.importImageFromURL_button').click(function() {
-			var fileName = prompt("Paste URL to Image (jpg, png, gif)", "http://");
-			if(fileName) {
-				pg.import.importAndAddImage(fileName);
+		jQuery('.importSVGFromURL_button').click(function () {
+			var url = prompt("Paste URL to SVG", "http://");
+			if (url) {
+				pg.import.importAndAddSVG(url);
 			}
 		});
 		
