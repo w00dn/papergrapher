@@ -1,13 +1,19 @@
 // zoom tool
 // adapted from http://sketch.paperjs.org/
 
+pg.tools.registerTool({
+	id: 'zoom',
+	name: 'Zoom',
+	usedKeys : {
+		toolbar : 'z'
+	}
+});
+
 pg.tools.zoom = function() {
 	var tool;
 	var doRectZoom;
 	
-	var options = {
-		name: 'Zoom'
-	};
+	var options = {};
 	
 	var activateTool = function() {
 		tool = new Tool();

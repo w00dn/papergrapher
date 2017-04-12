@@ -1,11 +1,15 @@
 // cloud tool
 // adapted from the paperjs examples (Tools/Cloud.html)
 
+pg.tools.registerTool({
+	id: 'cloud',
+	name: 'Cloud'
+});
+
 pg.tools.cloud = function() {
 	var tool;
 	
 	var options = {
-		name: 'Cloud',
 		pointDistance: 30,
 		randomizeDistance: false,
 		randomDistMin: 15,
@@ -60,7 +64,7 @@ pg.tools.cloud = function() {
 			
 			startPos = event.point;
 			path = new Path();
-			path = pg.style.applyActiveToolbarStyle(path);
+			path = pg.stylebar.applyActiveToolbarStyle(path);
 			path.strokeCap = 'round';
 			path.strokeJoin = 'round';
 			path.add(event.point);

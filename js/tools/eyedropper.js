@@ -1,11 +1,17 @@
 // eyedropper tool
 
+pg.tools.registerTool({
+	id: 'eyedropper',
+	name: 'Eyedropper',
+	usedKeys : {
+		toolbar : 'i'
+	}
+});
+
 pg.tools.eyedropper = function() {
 	var tool;
 
-	var options = {
-		name: 'Eyedropper'
-	};
+	var options = {};
 
 	var activateTool = function() {
 				
@@ -27,10 +33,10 @@ pg.tools.eyedropper = function() {
 			if (hitResult) {
 				if(event.modifiers.option) {
 					pg.undo.snapshot('applyToolbarStyles');
-					pg.style.applyActiveToolbarStyle(hitResult.item);
+					pg.stylebar.applyActiveToolbarStyle(hitResult.item);
 					
 				} else {
-					pg.style.updateFromItem(hitResult.item);
+					pg.stylebar.updateFromItem(hitResult.item);
 				}
 			}
 		};

@@ -7,14 +7,12 @@ pg.layer = function() {
 		var defaultLayer = addNewLayer('Default layer');
 		defaultLayer.data.isDefaultLayer = true;
 		
-		var guideLayer = addNewLayer('pg.internalGuideLayer');
-		guideLayer.data.isGuideLayer = true;
-		guideLayer.bringToFront();
+		ensureGuideLayer();
 		
 		defaultLayer.activate();
 		pg.layerPanel.updateLayerList();
 	};
-
+	
 	
 	var isLayer = function(item) {
 		return item.className === "Layer";
@@ -23,6 +21,15 @@ pg.layer = function() {
 	
 	var isActiveLayer = function(layer) {
 		return paper.project.activeLayer == layer;
+	};
+		
+	
+	var ensureGuideLayer = function() {
+		if(!getGuideLayer()) {
+			var guideLayer = addNewLayer('pg.internalGuideLayer');
+			guideLayer.data.isGuideLayer = true;
+			guideLayer.bringToFront();
+		}
 	};
 	
 	
@@ -61,12 +68,24 @@ pg.layer = function() {
 			layer.remove();
 		}
 		var defaultLayer = getDefaultLayer();
-		defaultLayer.activate();
+		if(defaultLayer) {
+			defaultLayer.activate();
+		}
 	};
-	
+
 	
 	var addItemsToLayer = function(items, layer) {
 		layer.addChildren(items);
+	};
+	
+	
+	var addSelectedItemsToActiveLayer = function() {
+		addItemsToLayer(pg.selection.getSelectedItems(), paper.project.activeLayer);
+	};
+	
+	
+	var getActiveLayer = function() {
+		return paper.project.activeLayer;
 	};
 	
 	
@@ -77,8 +96,9 @@ pg.layer = function() {
 				return layer;
 			}
 		}
+		return false;
 	};
-	
+
 	
 	var getDefaultLayer = function() {
 		for(var i=0; i<paper.project.layers.length; i++) {
@@ -87,6 +107,13 @@ pg.layer = function() {
 				return layer;
 			}
 		}
+		return false;
+	};
+		
+	
+	var activateDefaultLayer = function() {
+		var defaultLayer = getDefaultLayer();
+		defaultLayer.activate();
 	};
 	
 	
@@ -97,6 +124,7 @@ pg.layer = function() {
 				return layer;
 			}
 		}
+		return false;
 	};
 	
 	
@@ -119,7 +147,10 @@ pg.layer = function() {
 			getLayerByID(order[i]).bringToFront();
 		}
 		// guide layer is always top
-		guideLayer.bringToFront();
+		var guideLayer = getGuideLayer();
+		if(guideLayer) {
+			guideLayer.bringToFront();
+		}
 	};
 	
 	
@@ -148,11 +179,15 @@ pg.layer = function() {
 		setup: setup,
 		isLayer: isLayer,
 		isActiveLayer: isActiveLayer,
+		ensureGuideLayer: ensureGuideLayer,
 		addNewLayer: addNewLayer,
 		deleteLayer: deleteLayer,
 		addItemsToLayer: addItemsToLayer,
+		addSelectedItemsToActiveLayer: addSelectedItemsToActiveLayer,
+		getActiveLayer: getActiveLayer,
 		getLayerByID: getLayerByID,
 		getDefaultLayer: getDefaultLayer,
+		activateDefaultLayer: activateDefaultLayer,
 		getGuideLayer: getGuideLayer,
 		getAllUserLayers: getAllUserLayers,
 		changeLayerOrderByIDArray: changeLayerOrderByIDArray,

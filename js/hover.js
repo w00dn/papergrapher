@@ -13,8 +13,11 @@ pg.hover = function() {
 			}
 			if(	hoveredItem === undefined && hitResult.item.selected === false) {
 				if(pg.item.isBoundsItem(hitResult.item)) {
-					hoveredItem = pg.guides.hoverBounds(hitResult);
+					hoveredItem = pg.guides.hoverBounds(hitResult.item);
 
+				} else if(pg.group.isGroupChild(hitResult.item)) {
+					hoveredItem = pg.guides.hoverBounds(pg.item.getRootItem(hitResult.item));
+					
 				} else {
 					hoveredItem = pg.guides.hoverItem(hitResult);
 				}

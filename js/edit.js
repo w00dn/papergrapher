@@ -23,7 +23,7 @@ pg.edit = function() {
 				if (item) {
 					item.selected = true;
 				}
-				var placedItem = paper.project.activeLayer.addChild(item);
+				var placedItem = pg.layer.getActiveLayer().addChild(item);
 				placedItem.position.x += 20;
 				placedItem.position.y += 20;
 			}

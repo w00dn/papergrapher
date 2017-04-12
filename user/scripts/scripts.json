@@ -1,0 +1,6 @@
+{
+	"scripts": [
+		"randomize-item-positions",
+		"squares-grid-10x10"
+	]
+}

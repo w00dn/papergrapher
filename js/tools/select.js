@@ -2,19 +2,168 @@
 // adapted from resources on http://paperjs.org and 
 // https://github.com/memononen/stylii
 
+pg.tools.registerTool({
+	id: 'select',
+	name: 'Item select',
+	usedKeys : {
+		toolbar : 'v',
+		selectAll : 'ctrl-a',
+		invertSelection: 'ctrl-i',
+		groupSelection : 'ctrl-g',
+		ungroupSelection : 'ctrl-shift-g',
+		copySelection: 'ctrl-c',
+		pasteSelection : 'ctrl-v'
+	}
+});
+
 pg.tools.select = function() {
 	var tool;
-	
+	var keyModifiers = {};
+			
 	var boundsPath;
 	var boundsScaleHandles = [];
-	var boundsRotHandles = [];	
- 
-	var options = {
-		name: 'Select'
+	var boundsRotHandles = [];
+	 
+	var options = {};
+	
+	var components = {};
+	
+	var menuEntries = {
+		editTitle: {
+			type : 'title',
+			text :'Edit'
+		},
+		copySelection: {
+			type: 'button',
+			label: 'Copy',
+			click: 'pg.edit.copySelectionToClipboard'
+		},
+		pasteSelection: {
+			type: 'button',
+			label: 'Paste',
+			click: 'pg.edit.pasteObjectsFromClipboard'
+		},
+		deleteSelection: {
+			type: 'button',
+			label: 'Delete',
+			click: 'pg.selection.deleteSelection'
+		},
+		selectionTitle: {
+			type : 'title',
+			text :'Select'
+		},
+		selectAll: {
+			type: 'button',
+			label: 'Select all',
+			click: 'pg.selection.selectAllItems'
+		},
+		selectNone: {
+			type: 'button',
+			label: 'Deselect all',
+			click: 'pg.selection.clearSelection'
+		},
+		invertSelection: {
+			type: 'button',
+			label: 'Invert selection',
+			click: 'pg.selection.invertItemSelection'
+		},
+		randomSelection: {
+			type: 'button',
+			label: 'Random items',
+			click: 'pg.selection.selectRandomItems'
+		},
+		groupingTitle: {
+			type : 'title',
+			text :'Group'
+		},
+		groupSelection: {
+			type: 'button',
+			label: 'Group',
+			click: 'pg.group.groupSelection'
+		},
+		ungroupSelection: {
+			type: 'button',
+			label: 'Ungroup',
+			click: 'pg.group.ungroupSelection'
+		},
+		layerTitle: {
+			type : 'title',
+			text :'Layer'
+		},
+		moveToLayer: {
+			type: 'button',
+			label: 'Move to active Layer',
+			click: 'pg.layer.addSelectedItemsToActiveLayer'
+		},
+		orderTitle: {
+			type : 'title',
+			text :'Order'
+		},
+		bringToFront: {
+			type: 'button',
+			label: 'Bring to front',
+			click: 'pg.order.bringSelectionToFront'
+		},
+		sendToBack: {
+			type: 'button',
+			label: 'Send to back',
+			click: 'pg.order.sendSelectionToBack'
+		},
+		compoundTitle: {
+			type : 'title',
+			text :'Compound path'
+		},
+		createCompoundPath: {
+			type: 'button',
+			label: 'Create compound path',
+			click: 'pg.compoundPath.createFromSelection'
+		},
+		releaseCompoundPath: {
+			type: 'button',
+			label: 'Release compound path',
+			click: 'pg.compoundPath.releaseSelection'
+		},
+		booleanTitle: {
+			type : 'title',
+			text :'Boolean operations'
+		},
+		booleanUnite: {
+			type: 'button',
+			label: 'Unite',
+			click: 'pg.boolean.booleanUnite'
+		},
+		booleanIntersect: {
+			type: 'button',
+			label: 'Intersect',
+			click: 'pg.boolean.booleanIntersect'
+		},
+		booleanSubtract: {
+			type: 'button',
+			label: 'Subtract',
+			click: 'pg.boolean.booleanSubtract'
+		},
+		booleanExclude: {
+			type: 'button',
+			label: 'Exclude',
+			click: 'pg.boolean.booleanExclude'
+		},
+		booleanDivide: {
+			type: 'button',
+			label: 'Divide',
+			click: 'pg.boolean.booleanDivide'
+		},
+		textTitle: {
+			type: 'title',
+			text: 'Text'
+		},
+		convertButton: {
+			type: 'button',
+			label: 'Text to outlines',
+			click: 'pg.text.convertSelectionToOutlines'
+		}
 	};
 
-	var activateTool = function() {
-		pg.selection.setSelectionMode('Item');
+	var activateTool = function() {		
 		setSelectionBounds();
 		preProcessSelection();
 		tool = new Tool();
@@ -25,11 +174,10 @@ pg.tools.select = function() {
 			curves: true,
 			fill: true,
 			guide: false,
-			tolerance: 4 / paper.view.zoom
+			tolerance: 8 / paper.view.zoom
 		};
 
 		var mode = 'none';
-
 		var selectionRect;
 
 		var itemGroup;
@@ -71,10 +219,18 @@ pg.tools.select = function() {
 					});
 										
 				} else {
-
 					// deselect all by default if the shift key isn't pressed
-					if(!event.modifiers.shift && !hitResult.item.selected) {
-						pg.selection.clearSelection();
+					// also needs some special love for compound paths and groups,
+					// as their children are not marked as "selected"
+					if(!event.modifiers.shift) {
+						var root = pg.item.getRootItem(hitResult.item);
+						if(pg.item.isCompoundPathItem(root) || pg.group.isGroup(root)) {
+							if(!root.selected) {
+								pg.selection.clearSelection();
+							}
+						} else if(!hitResult.item.selected) {
+							pg.selection.clearSelection();
+						}
 					}
 					// deselect a currently selected item if shift is pressed
 					if(event.modifiers.shift && hitResult.item.selected) {
@@ -194,7 +350,6 @@ pg.tools.select = function() {
 
 				for(var i=0; i<selectedItems.length; i++) {
 					var item = selectedItems[i];
-					
 					// add the position of the item before the drag started
 					// for later use in the snap calculation
 					if(!item.data.origPos) {
@@ -220,7 +375,6 @@ pg.tools.select = function() {
 				selectionRect.remove();
 				
 			} else if(mode == 'move' || mode == 'cloneMove') {
-				pg.undo.snapshot('moveSelection');
 				
 				// resetting the items origin point for the next usage
 				var selectedItems = pg.selection.getSelectedItems();
@@ -229,15 +383,27 @@ pg.tools.select = function() {
 					// remove the orig pos again
 					item.data.origPos = null;			
 				});
+				pg.undo.snapshot('moveSelection');
 				
 			} else if(mode == 'scale') {
 				itemGroup.applyMatrix = true;
+				
+				// mark text items as scaled (for later use on font size calc)
+				for(var i=0; i<itemGroup.children.length; i++) {
+					var child = itemGroup.children[i];
+					if(child.data.isPGTextItem) {
+						child.data.wasScaled = true;
+					}
+				}
+				
 				itemGroup.layer.addChildren(itemGroup.children);
 				itemGroup.remove();
 				pg.undo.snapshot('scaleSelection');
 				
 			} else if(mode == 'rotate') {
-				
+				jQuery.each(rotItems, function(i, item) {
+					item.applyMatrix = true;
+				});
 				pg.undo.snapshot('rotateSelection');
 			}
 			
@@ -251,19 +417,52 @@ pg.tools.select = function() {
 			}
 		};
 		
+		tool.onKeyDown = function(event) {
+			keyModifiers[event.key] = true;
+		};
+		
+		tool.onKeyUp = function(event) {
+			
+			if(keyModifiers.control && keyModifiers.shift) {
+				if(event.key == 'g') {
+					pg.group.ungroupSelection();
+				}
+				
+			} else if(keyModifiers.control) {
+				if(event.key == 'a') {
+					pg.selection.selectAllItems();
+				} else if(event.key == 'i') {
+					pg.selection.invertItemSelection();
+				} else if(event.key == 'g') {
+					pg.group.groupSelection();
+				} else if(event.key == 'c') {
+					pg.edit.copySelectionToClipboard();
+				} else if(event.key == 'v') {
+					pg.edit.pasteObjectsFromClipboard();
+				}	
+			}
+			
+			keyModifiers[event.key] = false;
+		};
+		
 		jQuery(document).on('DeleteItems Undo Grouped Ungrouped SelectionChanged', function(){
 			setSelectionBounds();
 		});
-				
+		
+		// setup floating tool options panel in the editor
+		//pg.toolOptionPanel.setup(options, components, function(){ });
+		
+		pg.menu.setupToolEntries(menuEntries);
+		
 		tool.activate();
 	};
 
 
 	var deactivateTool = function() {
-		jQuery(document).off('DeleteItems Undo Grouped Ungrouped');
-		pg.selection.setSelectionMode('None');
 		pg.hover.clearHoveredItem();
 		removeBoundsPath();
+		pg.menu.clearToolEntries();
+		jQuery(document).off('DeleteItems Undo Grouped Ungrouped SelectionChanged');
 	};
 	
 	

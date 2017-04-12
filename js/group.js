@@ -3,24 +3,49 @@
 pg.group = function() {
 
 	var groupSelection = function() {
-		var group = new paper.Group(pg.selection.getSelectedItems());
-		pg.selection.clearSelection();
-		pg.selection.setItemSelection(group, true);
-		pg.undo.snapshot('groupSelection');
-		jQuery(document).trigger('Grouped');
-		return group;
+		var items = pg.selection.getSelectedItems();
+			if(items.length > 0) {
+			var group = new paper.Group(items);
+			pg.selection.clearSelection();
+			pg.selection.setItemSelection(group, true);
+			pg.undo.snapshot('groupSelection');
+			jQuery(document).trigger('Grouped');
+			return group;
+		} else {
+			return false;
+		}
+	};
+	
+	
+	var ungroupSelection = function() {
+		var items = pg.selection.getSelectedItems();
+		ungroupItems(items);
+		pg.statusbar.update();
+	};
+	
+	
+	var groupItems = function(items) {
+		if(items.length > 0) {
+			var group = new paper.Group(items);
+			jQuery(document).trigger('Grouped');
+			pg.undo.snapshot('groupItems');
+			return group;
+		} else {
+			return false;
+		}
 	};
 
 
 	// ungroup items (only top hierarchy)
-	var ungroupItems = function(selectedItems) {
+	var ungroupItems = function(items) {
 		var emptyGroups = [];
-		for(var i=0; i<selectedItems.length; i++) {
-			if(isGroup(selectedItems[i])) {
-				ungroupLoop(selectedItems[i], false);
+		for(var i=0; i<items.length; i++) {
+			var item = items[i];
+			if(isGroup(item) && !item.data.isPGTextItem) {
+				ungroupLoop(item, false);
 
-				if(!selectedItems[i].hasChildren()) {
-					emptyGroups.push(selectedItems[i]);
+				if(!item.hasChildren()) {
+					emptyGroups.push(item);
 				}
 			}
 		}
@@ -75,15 +100,24 @@ pg.group = function() {
 
 
 	var isGroup = function(item) {
-		return item && item.className && item.className === 'Group';
+		return pg.item.isGroupItem(item);
 	};
-
+	
+	
+	var isGroupChild = function(item) {
+		var rootItem = pg.item.getRootItem(item);
+		return isGroup(rootItem);
+	};
+	
 	
 	return {
 		groupSelection: groupSelection,
+		ungroupSelection: ungroupSelection,
+		groupItems: groupItems,
 		ungroupItems: ungroupItems,
 		getItemsGroup: getItemsGroup,
-		isGroup: isGroup
+		isGroup: isGroup,
+		isGroupChild:isGroupChild
 	};
 
 }();

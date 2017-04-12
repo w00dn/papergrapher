@@ -2,74 +2,62 @@
 
 pg.menu = function() {
 	
-	var $topMenuButton = jQuery('#appNav .topMenu>li');
-	var $subMenu = jQuery('#appNav .subMenu');
-	var $subMenuButton = jQuery('#appNav .subMenu>li');
-	var $menuInputBlocker = jQuery('#menuInputBlocker');
-	
-	
 	var setup = function() {
 		setupNavigationLogic();
 		setupFileSection();
-		setupEditSection();
-		setupObjectSection();
-		setupSelectSection();
-		setupViewSection();
-		setupWindowSection();
-		setupInfoSection();
-		showMenu();
 	};
 
 
 	var setupNavigationLogic = function() {
-		// toggle navigation bar class (for hover/click filtering)
-		jQuery('#appNav .topMenu').click(function() {
-			jQuery(this).toggleClass('active');
-		});
 		
 		// click on $topMenuButton sets active state on button and shows/hides 
 		// submenu. also shows/hides inputblocker in the background (transparent)
-		$topMenuButton.click(function() {
-			$subMenu.hide();
-			$topMenuButton.not(jQuery(this)).removeClass('active');
+		jQuery('#appNav .topMenu>li').off('click').on('click', function(e) {
+			e.stopPropagation();
+			var $button = jQuery(this);
+			jQuery('#appNav .topMenu>li').not($button).removeClass('active');
+			jQuery('#appNav .subMenu').hide();
 			
-			if(jQuery(this).hasClass('active')) {
-				jQuery(this).removeClass('active').children('ul').hide();
-				
-				$menuInputBlocker.hide();
-				
-			} else {
-				jQuery(this).addClass('active').children('ul').slideDown(50);
-				$menuInputBlocker.show();
-			}
-		});
-		
-		// $topMenuButtons unfold the menu if the nav bar is active (was clicked upon)
-		// then hovering over $topMenuButtons switches to the according submenu
-		$topMenuButton.hover(function(e) {
-			if(jQuery(e.target).hasClass('topMenuButton')) {
-				if(jQuery('#appNav .topMenu').hasClass('active')) {
-					// default hiding of everything not this
-					$subMenu.hide();
-					$topMenuButton.not(jQuery(this)).removeClass('active');
-					
-					jQuery(this).addClass('active').children('ul').slideDown(50);
+			if(!$button.hasClass('empty')) {			
+				$button.parent().addClass('active');
+
+				if($button.hasClass('active')) {
+					closeMainMenu();
+				 
+				} else {
+					$button.addClass('active').children('ul').show();
+					$button.find('.subSubMenu').removeClass('active');
+					jQuery('#menuInputBlocker').show();
 				}
 			}
-		}, function() {
-			
 		});
 		
-
-		$menuInputBlocker.click(function() {
-			hideMenus();
-		});
 		
-		$subMenuButton.click(function(e) {
-			hideMenus();
+		jQuery('#appNav .subMenu .hasSubSubMenu').off('click').on('click', function(e) {
 			e.stopPropagation();
+			var $subSubMenu = jQuery(this).children('ul');
+			$subSubMenu.toggleClass('active');
 		});
-
+		
+		
+		jQuery('.subSubMenu>li').on('click', function(e) {
+			e.stopPropagation();
+			closeMainMenu();
+		});
+		
+		
+		jQuery('#menuInputBlocker').off('click').on('click', function(e) {
+			hideMenus();
+		});
+	 
+	};
+	
+	
+	var closeMainMenu = function() {
+		jQuery('.topMenuButton').removeClass('active');
+		jQuery('.subMenu').hide();
+		jQuery('.subSubMenu').removeClass('active');
+		jQuery('#menuInputBlocker').hide();
 	};
 	
 	
@@ -86,7 +74,7 @@ pg.menu = function() {
 				pg.settings.clearSettings();
 			}
 		});
-
+		
 		// handle change on hidden file input in menu item
 		jQuery('#fileUploadSVG').on('change', function(event) {
 			pg.helper.processFileInput('text', event.target, function(data) {
@@ -100,6 +88,15 @@ pg.menu = function() {
 				pg.document.loadJSONDocument(data);
 			});
 		});
+		
+		jQuery('.undo_button').click(function() {
+			pg.undo.undo();
+		});
+		
+		jQuery('.redo_button').click(function() {
+			pg.undo.redo();
+		});
+		
 		
 		// handle change on hidden file input in menu item
 		jQuery('#fileUploadImage').on('change', function(event) {
@@ -134,82 +131,6 @@ pg.menu = function() {
 		jQuery('.exportImage_button').click(function() {
 			pg.export.exportAndPromptImage();
 		});
-
-	};
-	
-	
-	var setupEditSection = function() {
-		
-		jQuery('.undo_button').click(function() {
-			pg.undo.undo();
-		});
-		
-		jQuery('.redo_button').click(function() {
-			pg.undo.redo();
-		});
-		
-		jQuery('.copyToClipboard_button').click(function() {
-			pg.edit.copySelectionToClipboard();
-		});
-		
-		jQuery('.pasteFromClipboard_button').click(function() {
-			pg.edit.pasteObjectsFromClipboard();
-		});
-		
-		jQuery('.deleteSelection_button').click(function() {
-			pg.selection.deleteSelection();
-		});
-	};
-	
-	
-	var setupObjectSection = function() {
-		jQuery('.group_button').click(function() {
-			pg.group.groupSelection();
-		});
-
-		jQuery('.ungroup_button').click(function() {
-			pg.group.ungroupItems(pg.selection.getSelectedItems());
-		});
-		
-		jQuery('.sendToActiveLayer_button').click(function() {
-			pg.layer.addItemsToLayer(pg.selection.getSelectedItems(), paper.project.activeLayer);
-		});
-		
-		jQuery('.bringToFront_button').click(function() {
-			pg.order.bringSelectionToFront();
-		});
-
-		jQuery('.sendToBack_button').click(function() {
-			pg.order.sendSelectionToBack();
-		});
-		
-		jQuery('.createCompoundPath_button').click(function() {
-			pg.compoundPath.createFromSelection();
-		});
-		
-		jQuery('.releaseCompoundPath_button').click(function() {
-			pg.compoundPath.releaseSelection();
-		});
-	};
-	
-	
-	var setupSelectSection = function() {
-				
-		jQuery('.selectAll_button').click(function() {
-			pg.selection.selectAll();
-		});
-
-		jQuery('.deselectAll_button').click(function() {
-			pg.selection.clearSelection();
-		});
-
-		jQuery('.invertSelection_button').click(function() {
-			pg.selection.invertSelection();
-		});
-	};
-	
-	
-	var setupViewSection = function() {
 		
 		jQuery('.zoomIn_button').click(function() {
 			pg.view.zoomBy(1.25);
@@ -227,11 +148,6 @@ pg.menu = function() {
 			pg.view.resetPan();
 		});
 		
-	};
-	
-	
-	var setupWindowSection = function() {
-		
 		jQuery('.scriptEditorButton').click(function() {
 			pg.codeEditor.toggleVisibility();
 		});
@@ -239,56 +155,99 @@ pg.menu = function() {
 		jQuery('.layerPanelButton').click(function() {
 			pg.layerPanel.toggleVisibility();
 		});
-	};
-	
-	var setupInfoSection = function() {
 		
 		jQuery('.aboutButton').click(function() {
 			showAboutModal();
 		});
-		
+
 	};
 
 	
-	var showMenu = function() {
-		
+	var setupToolEntries = function(entries) {
+		var $toolMenu = jQuery('#toolSubMenu');		
+		$toolMenu.empty().parent().removeClass('empty');
+		var $subMenuAttachParent = null;
+		jQuery.each(entries, function(index, entry) {
+			if(entry.type == 'title') {
+				$toolMenu.append(jQuery('<li class="space"></li>'));
+				var $subSubMenuButton = jQuery('<li class="hasSubSubMenu">'+entry.text+'</li>');
+				$subMenuAttachParent = jQuery('<ul class="subSubMenu">');
+				$subSubMenuButton.append($subMenuAttachParent);
+				$toolMenu.append($subSubMenuButton);
+				
+			} else if(entry.type == 'button') {
+				var classString = entry.class ? ' '+entry.class : '' ;
+				var $toolButton = jQuery('<li class="button'+classString+'" data-click="'+entry.click+'">'+entry.label+'</li>');
+				
+				$toolButton.click(function() {
+					var func = jQuery(this).attr('data-click');
+					pg.helper.executeFunctionByName(func, window);
+					setTimeout(function() {
+						hideMenus();
+					}, 100);
+				});
+				if($subMenuAttachParent == undefined) {
+					$toolMenu.append($toolButton);
+				} else {
+					$subMenuAttachParent.append($toolButton);
+				}
+			}
+			
+		});
+		setupNavigationLogic();
 	};
 	
 	
+	var clearToolEntries = function() {
+		jQuery('#toolSubMenu').empty().parent().addClass('empty');
+	};
+	
+
 	var showContextMenu = function(event) {
+	
 		// check for selected items, so the right context menu can be opened
-		if(paper.project.selectedItems.length > 0) {
+		if(pg.selection.getSelectedItems().length > 0) {
+			if(jQuery('#appNavContextMenu').length > 0) {
+				return;
+			}
 			// create, append and position context menu for object context
 			jQuery('body').append("<nav class='appNav' id='appNavContextMenu'></nav>");
 			
-			var $menu = jQuery('#objectSubMenu')
+			var $menu = jQuery('#toolSubMenu')
 				.clone(true)
 				.appendTo('#appNavContextMenu')
-				.show()
-				.slideDown(50);
+				.show();
 			
-			$menu.css({ 'position': 'absolute', 'top': event.pageY, 'left': event.pageX });
+			var menuPosY = event.pageY;
+			var diff = (jQuery(document).height() - event.pageY) - $menu.outerHeight();
+			if(diff < 0) {
+				menuPosY += diff - 10; 
+			}
+			$menu.css({ 'position': 'absolute', 'top': menuPosY, 'left': event.pageX });
 			
 			jQuery('#menuInputBlocker').show();
 			
 		} else {
-			//create context menu for document context
+			//todo: create context menu for document context
 		}
-	};
 	
+	};
 	
 	var hideMenus = function() {
-		$topMenuButton.removeClass('active');
+		jQuery('#appNav .topMenu>li').removeClass('active');
 		jQuery('#appNav .topMenu').removeClass('active');
-		$subMenu.hide();
+		jQuery('#appNav .subMenu').hide();
+		jQuery('#menuInputBlocker').hide();
 		hideContextMenu();
 	};
-
-
+	
+	
 	var hideContextMenu = function() {
+		
 		jQuery('body').off('click.contextMenu');
 		jQuery('body>#appNavContextMenu').remove();
-		$menuInputBlocker.hide();
+		jQuery('#menuInputBlocker').hide();
+		
 	};
 		
 	
@@ -300,6 +259,8 @@ pg.menu = function() {
 	
 	return {
 		setup:setup,
+		setupToolEntries: setupToolEntries,
+		clearToolEntries: clearToolEntries,
 		showContextMenu:showContextMenu,
 		hideContextMenu:hideContextMenu,
 		showAboutModal: showAboutModal

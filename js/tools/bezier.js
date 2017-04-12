@@ -1,13 +1,18 @@
 // bezier tool
 // adapted from the paperjs examples (Tools/BezierTool.html)
+
+pg.tools.registerTool({
+	id: 'bezier',
+	name: 'Bezier',
+	usedKeys : {
+		toolbar : 'p'
+	}
+});
+
 pg.tools.bezier = function() {
 	var tool;
-	var types = ['point', 'handleIn', 'handleOut'];
 	
-	var options = {
-		name: 'Bezier',
-		type: 'toolbar'
-	};
+	var options = {};
 	
 	var activateTool = function() {
 		tool = new Tool();
@@ -39,7 +44,7 @@ pg.tools.bezier = function() {
 				if(!hoveredItem) {
 					pg.selection.clearSelection();
 					path = new Path();
-					path = pg.style.applyActiveToolbarStyle(path);
+					path = pg.stylebar.applyActiveToolbarStyle(path);
 					
 				} else {
 					if(!hoveredItem.item.closed) {
@@ -155,6 +160,7 @@ pg.tools.bezier = function() {
 	};
 	
 	var findHandle = function(path, point) {
+		var types = ['point', 'handleIn', 'handleOut'];
 		for (var i = 0, l = path.segments.length; i < l; i++) {
 			for (var j = 0; j < 3; j++) {
 				var type = types[j];

@@ -4,7 +4,7 @@
 	right: 0;
 	width: 240px;
 	z-index: 40;
-	background-color: #777;
+	background-color: #444;
 	color: #ccc;
 }
 
@@ -37,7 +37,9 @@
 	border-top: 1px solid #333;
 }
 
-.layerEntry:hover,
+.layerEntry:hover {
+	background-color: #555;
+}
 .layerEntry.active {
 	background-color: #666;
 }
@@ -72,7 +74,7 @@
 .layerEntry .layerName input {
 	padding: 0.05em 0.5em 0 0.5em;
 	font-size: inherit;
-	background-color: #555;
+	background-color: #444;
 	border: none;
 	color: inherit;
 	width: 100%;
@@ -80,6 +82,7 @@
 
 .layerEntry .layerName input[disabled] {
 	background-color: transparent;
+	pointer-events: none;
 }
 
 .layerDeleteButton {

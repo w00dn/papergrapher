@@ -1,161 +1,336 @@
+// text tool
 
+pg.tools.registerTool({
+	id: 'text',
+	name: 'Text',
+	usedKeys : {
+		toolbar : 't'
+	}
+});
 
 pg.tools.text = function () {
 	var tool;
+	
+	var options = {
+		fontFamily: '',
+		fontStyle: '',
+		fontSize: 80,
+		letterSpacing: 0
+	};
+	
+	var components = {
+		fontFamily: {
+			type: 'list',
+			label: 'Font',
+			options: [ '' ],
+			maxWidth: 80
+		},
+		fontStyle: {
+			type: 'list',
+			label: 'Style',
+			options: [ '' ],
+			maxWidth: 80
+		},
+		fontSize: {
+			type: 'float',
+			label: 'Size',
+			min: 0
+		},
+		letterSpacing: {
+			type: 'int',
+			label: 'Spacing'
+		},
+		fontTextInput: {
+			type: 'text',
+			label: 'Text'
+		}
+	};
+	
 	var textItem;
 	var toolMode = 'create';
-	var quickMode = false;
-
-	var options = {
-		name: 'Text'
-	};
+	var creationPoint;
+	var $textInput;
+	
+	var textSize = -1;
+	var textAngle = 0;
 
 	var activateTool = function () {
-
-		var hitItem;
-
+		
+		var hitItem = null;
+				
 		var hitOptions = {
 			fill: true,
-			class: PointText,
+			curves: true,
 			tolerance: 5 / paper.view.zoom
 		};
 
+		// get options from local storage if present
+		options = pg.tools.getLocalOptions(options);
+		
 		tool = new Tool();
-
+		creationPoint = paper.view.center;
+		
 		// if the user hasn't changed the colors yet, switching to the text
 		// tool will set the fillColor to black and the strokeColor to null
-		// because currently, you can't click-select text with no fillColor
-		if (pg.style.areColorsDefault()) {
-			pg.style.setFillColor('rgb(0, 0, 0)');
-			pg.style.setStrokeColor(null);
+		if (pg.stylebar.areColorsDefault()) {
+			pg.stylebar.setFillColor('rgb(0, 0, 0)');
+			pg.stylebar.setStrokeColor(null);
 		}
-		;
-
-		pg.selection.clearSelection();
-
-		pg.settingsbar.showSection('text');
-
-		tool.onMouseDown = function (event) {
+		
+		tool.onMouseMove = function(event) {
 			var hitResult = paper.project.hitTest(event.point, hitOptions);
-
-
-			if (hitResult && toolMode !== 'edit') {
-				hitItem = hitResult;
-				editItem(hitResult.item);
-
-
+			if(hitResult && hitResult.item) {
+				var root = pg.item.getRootItem(hitResult.item);
+				if(root.data.isPGTextItem) {
+					hitItem = root;
+				} else {
+					hitItem = null;
+				}
 			} else {
-
-				if (toolMode === 'edit') {
-					finalizeInput(textItem);
-					pg.undo.snapshot('text edit');
-
+				hitItem = null;
+			}
+		};
+		
+	 
+		tool.onMouseDown = function (event) {
+			if(toolMode == 'edit') {
+				finalizeInput();
+			}
+			
+			if(toolMode == 'create') {
+				toolMode = 'edit';
+				if(hitItem) {
+					pg.selection.clearSelection();
+					pg.selection.setItemSelection(hitItem, true);
+					handleSelectedItem(hitItem);
+					rebuildFamilySelect();
+					rebuildFontStyleSelect();
+					rebuildFontSizeInput();
+					$textInput.focus();
+					
 				} else {
 					pg.selection.clearSelection();
-					textItem = new PointText(event.point);
-
-					textItem = pg.style.applyActiveToolbarStyle(textItem);
-					pg.selection.setItemSelection(textItem, true);
-					overlayInputField();
-
-					toolMode = 'edit';
-					pg.undo.snapshot('text create');
+					createItem('', event.point);
+					$textInput.focus();
 				}
+				pg.undo.snapshot('texteditstarted');
 			}
-
-			pg.settingsbar.update();
-
 		};
-
-		tool.onMouseUp = function (event) {
-			// somehow, some styles cannot be applied right after creation,
-			// so we do it again in mouseUp
-			textItem = pg.style.applyActiveToolbarStyle(textItem);
-		};
-
-
+		
+		
+		// setup floating tool options panel in the editor
+		pg.toolOptionPanel.setup(options, components, function(){
+			rebuildFontStyleSelect();
+			createItem(jQuery('#textToolInput').val(), creationPoint);
+			rebuildFontSizeInput();
+			
+		});
+		
+		// if there is a selected item, load its value to the options
+		var selectedItems = pg.selection.getSelectedItems();
+		if(selectedItems.length > 0 && selectedItems[0].data.isPGTextItem) {
+			handleSelectedItem(selectedItems[0]);
+			toolMode = 'edit';
+		}
+		
+		rebuildFamilySelect();
+		rebuildFontStyleSelect();
+		rebuildFontSizeInput();
+		setupFontImportSection();
+		setupInputField();
+		
 		tool.activate();
 	};
+	
+	
+	var handleSelectedItem = function(selectedItem) {
+		options.fontFamily = selectedItem.data.fontFamily;
+		options.fontStyle = selectedItem.data.fontStyle;
+		options.fontSize = selectedItem.data.fontSize;
+		options.letterSpacing = selectedItem.data.letterSpacing;
+		jQuery('.toolOptionPanel input[name="fontSize"]').val(selectedItem.data.fontSize);
+		jQuery('.toolOptionPanel input[name="letterSpacing"]').val(selectedItem.data.letterSpacing);
+		jQuery('#textToolInput').val(selectedItem.data.text);
+		creationPoint = selectedItem.position;
+		textItem = selectedItem;
+		
+		// save original scale and size (kinda...)
+		if(textItem) {
+			var helperCurve = getFirstCurve(textItem);
+			if(helperCurve){
+				textSize = helperCurve.length;
+				textAngle = helperCurve.line.vector.angle;
+			}
+		}
+	};
+	
+	
+	var createItem = function(text, pos) {
+		var wasScaled = false;
+		if(textItem) {
+			wasScaled = textItem.data.wasScaled;
+			textItem.remove();
+		}
+		toolMode = 'edit';
+		creationPoint = pos;
+		textItem = pg.text.createPGTextItem(text, options, pos);
+		textItem.data.wasScaled = wasScaled;
+		pg.stylebar.applyActiveToolbarStyle(textItem);
+		
+		// apply original rotation and scale to the new item
+		if(textItem) {
+			var helperCurve = getFirstCurve(textItem);
+			if(helperCurve) {
+				if( textSize > -1 && textItem.data.wasScaled) {
+					var glyphHeight = helperCurve.length;
+					textItem.scaling = textSize/glyphHeight;
+				}
 
-
-	var overlayInputField = function () {
-		var $input = jQuery('<input id="fakeTextInput" class="fakeTextInput"></input>');
-
-		$input.css({
-			position: 'absolute',
-			top: 80,
-			left: 100,
-			zIndex: 10,
+				var angle = helperCurve.line.vector.angle;
+				if(textAngle != 0) {
+					textItem.rotation = textAngle-angle;
+				}
+			}
+		}
+	};
+	
+	
+	var getFirstCurve = function(item) {
+		for(var i=0; i<item.children.length; i++) {
+			for(var j=0; j<item.children[i].children.length; j++) {
+				var child = item.children[i].children[j];
+				if(child.data.isPGGlyphRect) {
+					return child.curves[0];
+				}
+			}
+		}
+	};
+	
+	var setupFontImportSection = function() {
+		var $fontImportLabel = jQuery('<label>Import</label>');
+		var $fontImportButton = jQuery('<input id="fontImportInput" type="file" multiple accept=".ttf, .otf, .woff" >');
+		var $fontImportSection = jQuery('<div class="option-section" data-id="fontImport">');
+		var $fontImportFakeButton = jQuery('<button class="fontImportFakeButton">Choose</button>');
+		$fontImportSection.append($fontImportLabel, $fontImportButton, $fontImportFakeButton);
+		jQuery('.toolOptionPanel .options').prepend($fontImportSection);
+		$fontImportButton.on('change', function(e) {
+			pg.text.readFontFilesFromInput(e, function(font) {
+				var info = pg.text.getShortInfoFromFont(font);
+				options.fontFamily = info.fontFamily;
+				options.fontStyle = info.fontStyle;
+				rebuildFamilySelect();
+				rebuildFontStyleSelect();
+				rebuildFontSizeInput();
+				createItem(jQuery('#textToolInput').val(), creationPoint);
+				$fontImportButton.val('');
+			});
 		});
+	};
 
 
-		jQuery('body').append($input);
-		var $fakeTextInput = jQuery('#fakeTextInput');
-		$fakeTextInput.focus();
-		$fakeTextInput.val(textItem.content);
-		$fakeTextInput.keyup(function (event) {
-			textItem.content = $fakeTextInput.val();
-			paper.project.view.update();
+	var rebuildFamilySelect = function() {
+		var importedFonts = pg.text.getImportedFonts();
+		var $familySelect = jQuery('.toolOptionPanel select[name="fontFamily"]');
+		$familySelect.empty();
+		for(var i=0; i<importedFonts.length; i++) {
+			var font = importedFonts[i];
+			var $familyOption = jQuery('<option value="'+font.name+'">'+font.name+'</option>');
+			if(options.fontFamily == font.name) {
+				$familyOption.attr('selected', true);
+			}
+			$familySelect.append($familyOption);
+		}
+		
+		// use fallback font if the one in the options isn't available anymore
+		if($familySelect.children('option[selected="selected"]').length <= 0) {
+			$familySelect.children('option').removeAttr('selected');
+			$familySelect.children('option').first().attr('selected', true);
+			options.fontFamily = $familySelect.children('option').first().val();
+		}
+	};
+	
+	
+	var rebuildFontStyleSelect = function() {
+		var importedFonts = pg.text.getImportedFonts();
+		var $familySelect = jQuery('.toolOptionPanel select[name="fontFamily"]');
+		var $styleSelect = jQuery('.toolOptionPanel select[name="fontStyle"]');
+		var selectedFamily = $familySelect.val();
+		$styleSelect.empty();
+		for(var i=0; i<importedFonts.length; i++) {
+			var font = importedFonts[i];
+			if(font.name == selectedFamily) {
+				for(var j=0; j<font.styles.length; j++) {
+					var fStyle = font.styles[j];
+					var $option = jQuery('<option value="'+fStyle.style+'">'+fStyle.style+'</option>');
+					if(options.fontStyle == fStyle.style) {
+						$option.attr('selected', true);
+					}
+					$styleSelect.append($option);
+				}
+			}
+		}
+		
+		// use fallback style if the one in the options isn't available anymore
+		if($styleSelect.children('option[selected="selected"]').length <= 0) {
+			$styleSelect.children('option').removeAttr('selected');
+			$styleSelect.children('option').first().attr('selected', true);
+			options.fontStyle = $styleSelect.children('option').first().val();
+		}
+	};
+	
+	
+	var rebuildFontSizeInput = function() {
+		if(textItem) {
+			var $sizeInput = jQuery('.toolOptionPanel input[name="fontSize"]');
+			var $sizeLabel = jQuery('.toolOptionPanel label[for="fontSize"]');
+			if(textItem.data.wasScaled) {
+				$sizeInput.attr('disabled', true);
+				$sizeInput.val('0');
+				$sizeLabel.text('Size (scaled)');
+			} else {
+				$sizeInput.removeAttr('disabled');
+				$sizeInput.val(textItem.data.fontSize);
+				$sizeLabel.text('Size');
+			}
+		}
+	};
+	
+	var setupInputField = function() {
+		$textInput = jQuery('#textToolInput');
+		$textInput.focus();
+		$textInput.keyup(function (event) {
+			createItem(jQuery(this).val(), creationPoint);
+			rebuildFontSizeInput();
 			if (event.keyCode === 13) {
-				finalizeInput(textItem);
+				finalizeInput();
 			}
 		});
 	};
 
-
-	var finalizeInput = function (textItem) {
-		var $fakeTextInput = jQuery('#fakeTextInput');
-		if ($fakeTextInput.exists() && $fakeTextInput.val() !== '') {
-			textItem.content = $fakeTextInput.val();
-			$fakeTextInput.remove();
+	
+	var finalizeInput = function () {
+		var $textInput = jQuery('#textToolInput');
+		if ($textInput.val() == '') {
+			textItem.remove();
+			
+		} else {
+			creationPoint = paper.view.center;
+			textItem = null;
+			$textInput.val('');
+			pg.undo.snapshot('textcreated');
 		}
-		pg.selection.setItemSelection(textItem, true);
 		toolMode = 'create';
-		pg.settingsbar.update();
-		paper.project.view.update();
-
-		if (quickMode) {
-			pg.toolbar.switchTool(pg.toolbar.getPreviousTool());
-			quickMode = false;
-		}
 	};
-
-
-	var updateTool = function () {
-
-	};
-
+	
+	
 	var deactivateTool = function () {
-		finalizeInput(textItem);
-		pg.settingsbar.update();
+		finalizeInput();
 	};
-
-	var editItem = function (item) {
-		toolMode = 'edit';
-		textItem = item;
-		pg.selection.clearSelection();
-		pg.selection.setItemSelection(textItem, true);
-		pg.style.updateFromSelection();
-		overlayInputField();
-	};
-
-
-	// called when a text item should be edited directly. quickMode means that
-	// the tool is switched after the text input is finalized 
-	// (ie. doubleclick on text items with select tools)
-	var quickEditItem = function (item) {
-		quickMode = true;
-		setTimeout(function () {
-			editItem(item);
-		}, 100);
-	};
-
-
+		
+	
 	return {
 		options: options,
 		activateTool: activateTool,
-		updateTool: updateTool,
-		deactivateTool: deactivateTool,
-		quickEditItem: quickEditItem
+		deactivateTool: deactivateTool
 	};
 };

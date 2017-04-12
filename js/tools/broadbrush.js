@@ -2,13 +2,16 @@
 // http://paperjs.org/tutorials/interaction/working-with-mouse-vectors/
 // improved with additional options
 
-pg.tools.broadBrush = function() {
+pg.tools.registerTool({
+	id: 'broadbrush',
+	name: 'Broad brush'
+});
+
+pg.tools.broadbrush = function() {
 	var tool;
 	var path;
 
 	var options = {
-		name: 'BroadBrush',
-		type: 'toolbar',
 		pointDistance: 20,
 		brushWidth: 60,
 		strokeEnds: 6,
@@ -65,7 +68,7 @@ pg.tools.broadBrush = function() {
 			if(event.event.button > 0) return;  // only first mouse button
 			
 			path = new Path();
-			path = pg.style.applyActiveToolbarStyle(path);
+			path = pg.stylebar.applyActiveToolbarStyle(path);
 		};
 		
 		tool.onMouseDrag = function(event) {

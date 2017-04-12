@@ -1,43 +1,47 @@
 // functions related to selecting stuff
 
 pg.selection = function() {
-	var selectionMode = "Item";
-
 	
 	var getSelectionMode = function() {
-		return selectionMode;
-	};
-	
-	
-	var checkSelectionMode = function(mode) {
-		return selectionMode === mode ? true : false;
-	};
-	
-	
-	var setSelectionMode = function(mode) {
-		selectionMode = mode;
-		if(mode == "Item") {
-			var selectedItems = getSelectedItems();
-			for(var i=0; i<selectedItems.lengt; i++) {
-				selectedItems[i].fullySelected = false;
-				selectedItems[i].selected = true;
+		var activeTool = pg.toolbar.getActiveTool();
+		if(activeTool) {
+			var activeToolID = activeTool.options.id;
+			if(activeToolID == 'detailselect') {
+				return 'Segment';
+			} else {
+				return 'Item';
 			}
 		}
 	};
-
 	
-	var selectAll = function() {
-		var items = pg.helper.getAllPaperItems();
+	
+	var selectAllItems = function() {
+		var items = pg.document.getAllSelectableItems();
 		
-		if(selectionMode === "Segment") {
-			for(var i=0; i<items.length; i++) {
-				selectItemSegments(items[i], true);
-			}
-			
-		} else if(selectionMode === "Item") {
-			for(var i=0; i<items.length; i++) {
+		for(var i=0; i<items.length; i++) {
+			setItemSelection(items[i], true);
+		}
+	};
+	
+	
+	var selectRandomItems = function() {
+		var items = pg.document.getAllSelectableItems();
+		
+		for(var i=0; i<items.length; i++) {
+			if(pg.math.getRandomBoolean()) {
 				setItemSelection(items[i], true);
 			}
+		}
+	};
+	
+	
+	
+	
+	var selectAllSegments = function() {
+		var items = pg.document.getAllSelectableItems();
+		
+		for(var i=0; i<items.length; i++) {
+			selectItemSegments(items[i], true);
 		}
 	};
 	
@@ -54,50 +58,85 @@ pg.selection = function() {
 			}
 			
 		} else {
-			item.fullySelected = state;
+			for(var i=0; i<item.segments.length; i++) {
+				item.segments[i].selected = state;
+			}
 		}
-
 	};
 	
 	
 	var clearSelection = function() {
 		paper.project.deselectAll();
-		pg.style.sanitizeSettings();
+		pg.stylebar.sanitizeSettings();
 		
-		pg.settingsbar.update();
-		pg.style.blurInputs();
+		pg.statusbar.update();
+		pg.stylebar.blurInputs();
 		pg.hover.clearHoveredItem();
-		pg.settingsbar.hideSection();
+		jQuery(document).trigger('SelectionChanged');
+	};
+
+	
+	var invertItemSelection = function() {
+		var items = pg.document.getAllSelectableItems();
+		
+		for(var i=0; i<items.length; i++) {
+			items[i].selected = !items[i].selected;
+		}
+		
 		jQuery(document).trigger('SelectionChanged');
 	};
 	
-
-	var invertSelection = function() {
-		var items = pg.helper.getAllPaperItems();
-
+	
+	var invertSegmentSelection = function() {
+		var items = pg.document.getAllSelectableItems();
+		
 		for(var i=0; i<items.length; i++) {
-			items[i].fullySelected = !items[i].fullySelected;
-		}
-	};
-
-
-	var deleteSelection = function() {
-		if(checkSelectionMode('Item')) {
-			var items = getSelectedItems();
-			for(var i=0; i<items.length; i++) {
-				items[i].remove();
-			}
-
-		} else if(checkSelectionMode('Segment')) {
-			var items = getSelectedItems();
-			for(var i=0; i<items.length; i++) {
-				deleteSegments(items[i]);
+			var item = items[i];
+			for(var j=0; j<item.segments.length; j++) {
+				var segment = item.segments[j];
+				segment.selected = !segment.selected;
 			}
 		}
 		
+		//jQuery(document).trigger('SelectionChanged');
+	};
+	
+	
+	var deleteSelection = function() {
+		var selectionMode = getSelectionMode();
+		
+		if(selectionMode == 'Segment') {
+			deleteSegmentSelection();
+		} else {
+			deleteItemSelection();
+		}
+	};
+	
+
+	var deleteItemSelection = function() {
+		var items = getSelectedItems();
+		for(var i=0; i<items.length; i++) {
+			items[i].remove();
+		}
+		
 		jQuery(document).trigger('DeleteItems');
+		jQuery(document).trigger('SelectionChanged');
 		paper.project.view.update();
-		pg.undo.snapshot('deleteSelection');
+		pg.undo.snapshot('deleteItemSelection');
+	};
+	
+	
+	var deleteSegmentSelection = function() {
+		
+		var items = getSelectedItems();
+		for(var i=0; i<items.length; i++) {
+			deleteSegments(items[i]);
+		}
+		
+		jQuery(document).trigger('DeleteSegments');
+		jQuery(document).trigger('SelectionChanged');
+		paper.project.view.update();
+		pg.undo.snapshot('deleteSegmentSelection');
 	};
 	
 	
@@ -141,25 +180,22 @@ pg.selection = function() {
 		var items = getSelectedItems();
 		for(var i=0; i<items.length; i++) {
 			var item = items[i];
-			if(checkSelectionMode('Segment')) {
-				var segments = item.segments;
-				for(var j=0; j<segments.length; j++) {
-					var segment = segments[j];
-					if(segment.selected) {
-						if(item.closed ||
-							(segment.next && 
-							!segment.next.selected &&
-							segment.previous &&
-							!segment.previous.selected) ) {
-							splitPathRetainSelection(item, j, true);
-							splitPathAtSelectedSegments();
-							return;
-						}
+			var segments = item.segments;
+			for(var j=0; j<segments.length; j++) {
+				var segment = segments[j];
+				if(segment.selected) {
+					if(item.closed ||
+						(segment.next && 
+						!segment.next.selected &&
+						segment.previous &&
+						!segment.previous.selected) ) {
+						splitPathRetainSelection(item, j, true);
+						splitPathAtSelectedSegments();
+						return;
 					}
 				}
 			}
 		}
-		
 	};
 	
 	
@@ -241,8 +277,8 @@ pg.selection = function() {
 			item.fullySelected = false; 
 			// then the item can be normally selected
 			item.selected = state;
-			// deselect children of compound-path for cleaner item selection
-			if(pg.compoundPath.isCompoundPath(item)) {
+			// deselect children of compound-path or group for cleaner item selection
+			if(pg.compoundPath.isCompoundPath(item) || pg.group.isGroup(item)) {
 				
 				var children = item.children;
 				if(children) {
@@ -253,10 +289,9 @@ pg.selection = function() {
 				}
 			}
 		}
-
-		pg.settingsbar.update(item);
-		pg.style.updateFromSelection();
-		pg.style.blurInputs();
+		pg.statusbar.update();
+		pg.stylebar.updateFromSelection();
+		pg.stylebar.blurInputs();
 		
 		jQuery(document).trigger('SelectionChanged');
 		
@@ -280,6 +315,10 @@ pg.selection = function() {
 				}
 			}
 		}
+		// sort items by index (0 at bottom)
+		itemsAndGroups.sort(function(a, b) {
+				return parseFloat(a.index) - parseFloat(b.index);
+		});
 		return itemsAndGroups;
 	};
 	
@@ -287,20 +326,28 @@ pg.selection = function() {
 	var getSelectionType = function() {
 		var selection = getSelectedItems();
 		if(selection.length === 0) {
-			return 'No selection';
+			return false;
 		}
 		
 		var selectionType = '';
+		var lastSelectionType = '';
 		for(var i=0; i<selection.length; i++) {
 			var item = selection[i];
 			if(getSelectionMode() === 'Segment') {
+				//todo: differentiate between segment, curve and handle
 				return 'Segment';
 			}
 			
-			if(i === 0) {
+			if(item.data.isPGTextItem) {
+				selectionType = 'Text';
+			} else {
 				selectionType = item.className;
 			}
-			if(item.className !== selectionType) {
+			
+			if(selectionType == lastSelectionType || lastSelectionType == '') {
+				lastSelectionType = selectionType;
+				
+			} else {
 				return 'Mixed';
 			}
 		}
@@ -321,108 +368,6 @@ pg.selection = function() {
 			}
 		}
 		return paths;
-	};
-	
-	
-	var colorizeSelectedFill = function(colorString) {
-		var items = getSelectedItems();
-		for(var i=0; i<items.length; i++) {
-			var item = items[i];
-			if(pg.item.isPointTextItem(item) && !colorString) {
-				colorString = 'rgba(0,0,0,0)';
-			}
-			item.fillColor = colorString;
-		}
-		pg.undo.snapshot('colorizeSelectedFill');
-	};
-
-
-	var colorizeSelectedStroke = function(colorString) {
-		var items = getSelectedItems();
-
-		for(var i=0; i<items.length; i++) {
-			items[i].strokeColor = colorString;
-		}
-		pg.undo.snapshot('colorizeSelectedStroke');
-	};
-	
-	
-	var setOpacity = function(alpha) {
-		var items = getSelectedItems();
-
-		for(var i=0; i<items.length; i++) {
-			if(pg.group.isGroup(items[i])) {
-				continue;
-			}
-			items[i].opacity = alpha;
-		}
-		pg.undo.snapshot('setOpacity');
-	};
-	
-	
-	var setBlendMode = function(mode) {
-		var items = getSelectedItems();
-		
-		for(var i=0; i<items.length; i++) {
-			if(pg.group.isGroup(items[i])) {
-				continue;
-			}
-			items[i].blendMode = mode;
-		}
-		pg.undo.snapshot('setBlendMode');
-	};
-	
-	
-	var setStrokeWidth = function(value) {
-		var items = getSelectedItems();
-
-		for(var i=0; i<items.length; i++) {
-			if(pg.group.isGroup(items[i])) {
-				continue;
-			}
-			items[i].strokeWidth = value;
-		}
-		pg.undo.snapshot('setStrokeWidth');
-	};
-	
-	
-	var setFontFamily = function(value) {
-		var items = getSelectedItems();
-		
-		for(var i=0; i<items.length; i++) {
-			var item = items[i];
-			if(pg.item.isPointTextItem(item)) {
-				item.fontFamily = value;
-			}
-		}
-		pg.undo.snapshot('setFontFamily');
-	};
-	
-	
-	var setFontWeight = function(value) {
-		var items = getSelectedItems();
-		
-		for(var i=0; i<items.length; i++) {
-			var item = items[i];
-			if(pg.item.isPointTextItem(item)) {
-				item.fontWeight = value;
-			}
-		}
-		pg.undo.snapshot('setFontWeight');
-	};
-	
-	
-	var setFontSize = function(value) {
-		var items = getSelectedItems();
-		
-		for(var i=0; i<items.length; i++) {
-			var item = items[i];
-			if(pg.item.isPointTextItem(item)) {
-				item.fontSize = value;
-				item.leading = item.fontSize;
-			}
-		}
-		pg.undo.snapshot('setFontSize');
 	};
 	
 	
@@ -465,13 +410,15 @@ pg.selection = function() {
 	
 	
 	var processRectangularSelection = function(event, rect, mode) {
-		var allItems = pg.helper.getAllPaperItems();
+		var allItems = pg.document.getAllSelectableItems();
 		
 		itemLoop:
 		for(var i=0; i<allItems.length; i++) {
 			var item = allItems[i];
+			if(mode == 'detail' && pg.item.isPGTextItem(pg.item.getRootItem(item))) {
+				continue itemLoop;
+			}
 			// check for item segment points inside selectionRect
-			
 			if(pg.group.isGroup(item) || pg.item.isCompoundPathItem(item)) {
 				if(!rectangularSelectionGroupLoop(item, rect, item, event, mode)) {
 					continue itemLoop;
@@ -491,7 +438,7 @@ pg.selection = function() {
 		for(var i=0; i<group.children.length; i++) {
 			var child = group.children[i];
 			
-			if(pg.group.isGroup(child)) {
+			if(pg.group.isGroup(child) || pg.item.isCompoundPathItem(child)) {
 				rectangularSelectionGroupLoop(child, rect, root, event, mode);
 				
 			} else {
@@ -564,7 +511,7 @@ pg.selection = function() {
 					return false;
 				}
 			}
-			pg.settingsbar.update(item);
+			pg.statusbar.update();
 
 		} else if(pg.item.isBoundsItem(item)) {
 			if(checkBoundsItem(rect, item, event)) {
@@ -607,26 +554,21 @@ pg.selection = function() {
 	
 	return {
 		getSelectionMode: getSelectionMode,
-		checkSelectionMode: checkSelectionMode,
-		setSelectionMode: setSelectionMode,
-		selectAll: selectAll,
+		selectAllItems: selectAllItems,
+		selectRandomItems: selectRandomItems,
+		selectAllSegments: selectAllSegments,
 		clearSelection: clearSelection,
-		invertSelection: invertSelection,
+		invertItemSelection: invertItemSelection,
+		invertSegmentSelection: invertSegmentSelection,
 		deleteSelection: deleteSelection,
+		deleteItemSelection: deleteItemSelection,
+		deleteSegmentSelection: deleteSegmentSelection,
 		splitPathAtSelectedSegments: splitPathAtSelectedSegments,
 		cloneSelection: cloneSelection,
 		setItemSelection: setItemSelection,
 		getSelectedItems: getSelectedItems,
 		getSelectionType: getSelectionType,
 		getSelectedPaths: getSelectedPaths,
-		colorizeSelectedFill: colorizeSelectedFill,
-		colorizeSelectedStroke: colorizeSelectedStroke,
-		setOpacity: setOpacity,
-		setBlendMode: setBlendMode,
-		setStrokeWidth: setStrokeWidth,
-		setFontFamily: setFontFamily,
-		setFontWeight: setFontWeight,
-		setFontSize: setFontSize,
 		switchSelectedHandles: switchSelectedHandles,
 		removeSelectedSegments: removeSelectedSegments,
 		processRectangularSelection: processRectangularSelection

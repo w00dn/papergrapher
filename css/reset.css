@@ -58,7 +58,7 @@ html {
 	box-sizing: inherit;
 }
 
-canvas, nav, .toolbar, .palettejs-panel {
+body {
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
 	-khtml-user-select: none;

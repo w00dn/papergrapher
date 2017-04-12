@@ -1,11 +1,15 @@
-// simple draw tool
+// drawing tool
 // adapted from resources on http://paperjs.org
+
+pg.tools.registerTool({
+	id: 'draw',
+	name: 'Draw'
+});
 
 pg.tools.draw = function() {
 	var tool;
 	
 	var options = {
-		name: 'Draw',
 		pointDistance: 20,
 		drawParallelLines: false,
 		lines: 3,
@@ -72,7 +76,7 @@ pg.tools.draw = function() {
 				var path = paths[i];
 				path = new Path();
 				
-				path = pg.style.applyActiveToolbarStyle(path);
+				path = pg.stylebar.applyActiveToolbarStyle(path);
 				
 				paths.push(path);
 			}

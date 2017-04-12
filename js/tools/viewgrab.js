@@ -1,14 +1,17 @@
 // view pan tool
 // adapted from http://sketch.paperjs.org/
 
-pg.tools.viewGrab = function() {
+pg.tools.registerTool({
+	id: 'viewgrab',
+	name: 'View grab',
+	type: 'hidden'
+});
+
+pg.tools.viewgrab = function() {
 	var tool;
 	var lastPoint;
 	
-	var options = {
-		name: 'ViewGrab',
-		type: 'hidden'
-	};
+	var options = {};
 	
 	var activateTool = function() {
 		tool = new Tool();

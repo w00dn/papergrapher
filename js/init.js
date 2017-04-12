@@ -10,15 +10,19 @@ var pg = function() {
 		pg.document.setup();
 		
 		pg.layer.setup();
-		
+				
 		pg.export.setup();
-
+		
+		pg.text.setup();
+		
 		pg.menu.setup();
-
+		
 		pg.toolbar.setup();
 		
-		pg.settingsbar.setup();
-
+		pg.stylebar.setup();
+		
+		pg.statusbar.setup();
+		
 		pg.input.setup();
 		
 		pg.undo.setup();
@@ -36,7 +40,7 @@ var pg = function() {
 jQuery.ajaxSetup({ cache: false });
 
 // set pg up on window load
-jQuery( window ).load(function() {
+jQuery(window).load(function() {
 	pg.init();
 	
 	// fade out loading screen and reveal ui

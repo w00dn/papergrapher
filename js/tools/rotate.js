@@ -1,9 +1,17 @@
+// rotation tool
+
+pg.tools.registerTool({
+	id: 'rotate',
+	name: 'Rotate',
+	usedKeys : {
+		toolbar : 'r'
+	}
+});
 
 pg.tools.rotate = function() {
 	var tool;
 	
 	var options = {
-		name: 'Rotate',
 		rotationCenter: 'selection',
 		randomSpeed: false,
 		lookAt: false

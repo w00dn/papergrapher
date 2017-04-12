@@ -1,10 +1,14 @@
-// rect tool
+// rectangle tool
+
+pg.tools.registerTool({
+	id: 'rectangle',
+	name: 'Rectangle'
+});
 
 pg.tools.rectangle = function() {
 	var tool;
 
 	var options = {
-		name: 'Rectangle',
 		roundedCorners: false,
 		cornerRadius: 20
 	};
@@ -56,7 +60,7 @@ pg.tools.rectangle = function() {
 				path.position = mouseDown;
 			}
 			
-			path = pg.style.applyActiveToolbarStyle(path);
+			path = pg.stylebar.applyActiveToolbarStyle(path);
 
 			// Remove this path on the next drag event:
 			path.removeOnDrag();

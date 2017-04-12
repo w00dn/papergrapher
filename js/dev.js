@@ -3,26 +3,23 @@ jQuery(window).load(function() {
 	
 	//pg.dev.loadStats();
 
-
-//	var rectangle = new Rectangle(new Point(100, 180), new Point(250, 270));
-//	var path = new Path.Rectangle(rectangle);
-//	path.fillColor = 'black';
-//	path.opacity = 0.4;
-//	path.selected = true;
-//	pg.undo.snapshot('addPath');
-	
-	//pg.document.importAndAddJSON('import/files/styles.json');
-	
-	WebFont.load({
-		google: {
-			families: ['Droid Sans', 'Droid Serif']
-		},
-		typekit: {
-			id: 'wzd6amn'
-		}
-	});
+	setTimeout(function() {
+		//var rectangle = new Rectangle(new Point(100, 180), new Point(250, 270));
+		//var path = new Path.Rectangle(rectangle);
+		//path.fillColor = 'black';
+		//path.opacity = 0.4;
+		//path.selected = true;
+		//pg.undo.snapshot('addPath');
+		/*
+		jQuery.getJSON('/dev/rings.json', function(data) {
+			pg.document.loadJSONDocument(data);
+		});
+		*/
+		
+	}, 500);
 	
 });
+
 
 pg.dev = function() {
 	
@@ -35,7 +32,7 @@ pg.dev = function() {
 			// Align top-left
 			stats.domElement.style.position = 'absolute';
 			stats.domElement.style.right = '0px';
-			stats.domElement.style.top = '61px';
+			stats.domElement.style.top = '30px';
 
 			document.body.appendChild( stats.domElement );
 

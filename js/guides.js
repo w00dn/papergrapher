@@ -22,9 +22,9 @@ pg.guides = function() {
 	};
 	
 	
-	var hoverBounds = function(hitResult) {
-		var rect = new paper.Path.Rectangle(hitResult.item.internalBounds);
-		rect.matrix = hitResult.item.matrix;
+	var hoverBounds = function(item) {
+		var rect = new paper.Path.Rectangle(item.internalBounds);
+		rect.matrix = item.matrix;
 		setDefaultGuideStyle(rect);
 		rect.parent = pg.layer.getGuideLayer();
 		rect.strokeColor = guideBlue;

@@ -1,4 +1,10 @@
-// exportRect tool
+// a tool for defining a rectangle to export svg or images from because by
+// default, paper.js exports the whole viewport rect
+
+pg.tools.registerTool({
+	id: 'exportrect',
+	name: 'Export area'
+});
 
 pg.tools.exportrect = function() {
 	var tool;
@@ -8,7 +14,6 @@ pg.tools.exportrect = function() {
 	var compoundPath;
 	
 	var options = {
-		name: 'ExportArea',
 		posX: -100,
 		posY: -100,
 		width: 200,
@@ -39,8 +44,6 @@ pg.tools.exportrect = function() {
 	
 	var activateTool = function() {
 		tool = new Tool();
-				
-		
 		
 		// if no options are set, try to get the current rect
 		if(pg.export.getExportRect()) {
@@ -83,6 +86,8 @@ pg.tools.exportrect = function() {
 			
 			pg.export.setExportRect(rect);
 			
+			pg.layer.activateDefaultLayer();
+			
 			pg.tools.setLocalOptions(options);
 			
 			pg.undo.snapshot('exportrectangle');	
@@ -98,9 +103,9 @@ pg.tools.exportrect = function() {
 		// override reset button... hacky...
 		jQuery('.toolOptionResetButton').unbind('click').click(function() {
 			if(confirm('Reset tool options to default?')) {
-				pg.tools.deleteLocalOptions(options.name);
+				pg.tools.deleteLocalOptions(options.id);
 				pg.export.clearExportRect();
-				pg.toolbar.switchTool(pg.tools.newToolByName(options.name), true);
+				pg.toolbar.switchTool(options.id, true);
 			}
 		});
 		
@@ -111,12 +116,12 @@ pg.tools.exportrect = function() {
 			if(confirm('Remove export area?')) {
 				pg.export.clearExportRect();
 				pg.guides.removeExportRectGuide();
-				pg.tools.deleteLocalOptions(options.name);
+				pg.tools.deleteLocalOptions(options.id);
 				pg.toolbar.setDefaultTool();
 			}
 		});
 		$optionSection.append($removeButton);
-		jQuery('.palettejs-panel .options').append($optionSection);
+		jQuery('.toolOptionPanel .options').append($optionSection);
 		
 		tool.activate();
 	};

@@ -1,7 +1,5 @@
 
-
 pg.view = function() {
-	
 	
 	var zoomBy = function(factor) {
 		paper.view.zoom *= factor;
@@ -10,13 +8,13 @@ pg.view = function() {
 		} else if(paper.view.zoom >= 1000) {
 			paper.view.zoom = 1000;
 		}
-		pg.toolbar.updateZoom();
+		pg.statusbar.update();
 	};
 	
 	
 	var resetZoom = function() {
 		paper.view.zoom = 1;
-		pg.toolbar.updateZoom();
+		pg.statusbar.update();
 	};
 	
 	

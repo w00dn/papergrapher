@@ -16,12 +16,26 @@
 	height: 30px;
 }
 
+.appNav .topMenu .burgerButton {
+	margin-top: 2px;
+	height: 12px;
+	width: 12px;
+}
+
+.appNav .topMenu .burgerButton line {
+	stroke: #bbb;
+}
+
+.appNav .topMenu li:hover .burgerButton line {
+	stroke: #fff;
+}
+
 .appNav .topMenu>li {
 	float:left;
 	position: relative;
 	box-sizing: border-box;
-	height: 28px;
-	padding: 7px 20px;
+	height: 30px;
+	padding: 7px 14px;
 	background-color: #fff;
 	cursor:default;
 	white-space: nowrap;
@@ -29,30 +43,47 @@
 	color: #bbb;
 }
 
+.appNav .topMenu>li.empty {
+	color: #777;
+}
 
-.appNav .topMenu>li.active,
-.appNav .topMenu>li:hover {
-	background-color: #444;
+
+.appNav .topMenu>li:not(.empty).active,
+.appNav .topMenu>li:not(.empty):hover {
 	color: #fff;
+}
+
+.appNav li.halfWidth {
+	display:inline-block;
+	width: 49%;
+}
+
+.appNav li.halfWidth.left {
+	border-right: 1px solid #555;
 }
 
 .appNav .subMenu {
 	display:none;
 	position: absolute;
-	z-index: 99;
-	top: 26px;
-	padding-top: 6px;
+	z-index: -1;
+	top: 30px;
 	left: -1px;
 	background-color: #444;
-	box-shadow: 3px 3px 4px -2px rgba(0, 0, 0, 0.5);
-	border-radius: 3px;
+	border-top: 2px solid #444;
+	box-shadow: 1px 1px 2px 1px rgba(0,0,0,0.2);
+	border-bottom-left-radius: 3px;
+	border-bottom-right-radius: 3px;
+	max-height: calc(100vh - 40px);
+	overflow-y: auto;
+	overflow-x: hidden;
+	min-width: 200px;
 }
 
 .appNav .subMenu>li {
 	position: relative;
-	padding: 6px 20px;
-	border-radius: 3px;
+	padding: 10px 20px;
 	color: #bbb;
+	cursor: default;
 }
 
 .appNav .subMenu>li:last-child {
@@ -60,9 +91,19 @@
 	
 }
 
-.appNav .subMenu>li:hover {
+.appNav .subMenu>li:not(.title):hover {
 	background-color: #444;
 	color: #fff;
+}
+
+.appNav .subMenu>li.title {
+	color: #888;
+	font-size: 0.7em;
+}
+
+.appNav .subMenu>li.title:not(:first-child) {
+	border-top: 1px solid #555;
+	margin-top: 1em;
 }
 
 .appNav .subMenu>li>.note {
@@ -73,11 +114,15 @@
 }
 
 .appNav li.space {
-	margin: 0.5em 0;
+	margin: 0;
 	padding: 0;
 	height: 0;
 	border: 0;
 	border-top: 1px solid #555;
+}
+
+.appNav li:first-of-type.space {
+	display:none;
 }
 
 .appNav a {
@@ -91,7 +136,35 @@
 	position: absolute;
 	left: 0;
 	top: 0;
+	width: 180px;
+	height: 35px;
 	opacity: 0;
+}
+
+
+/* sub sub menu */
+
+.subSubMenu {
+	display:none;
+	position: relative;
+	margin: 6px 10px;
+}
+
+.subSubMenu.active {
+	display:block;
+	color: inherit;
+}
+.appNav .subMenu>li:hover .subSubMenu {
+	color: #bbb;
+}
+
+.subSubMenu>li {
+	position: relative;
+	padding: 6px 0;
+}
+
+.subSubMenu>li:hover {
+	color: #fff;
 }
 
 
@@ -107,3 +180,4 @@
 	padding: 10px;
 	background-color: #ddd;
 }
+

@@ -1,12 +1,15 @@
 // circle tool
 // adapted from the paperjs examples (Tools/Circles.html)
 
+pg.tools.registerTool({
+	id: 'circle',
+	name: 'Circle'
+});
+
 pg.tools.circle = function() {
 	var tool;
 	
-	var options = {
-		name: 'Circle'
-	};
+	var options = {};
 	
 	var activateTool = function() {
 		tool = new Tool();
@@ -24,7 +27,7 @@ pg.tools.circle = function() {
 				size: 0
 			});
 			
-			shape = pg.style.applyActiveToolbarStyle(shape);
+			shape = pg.stylebar.applyActiveToolbarStyle(shape);
 		};
 		
 		

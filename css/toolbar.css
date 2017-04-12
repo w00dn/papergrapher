@@ -2,12 +2,15 @@
 .toolbar {
 	position: absolute;
 	padding: 14px 5px 8px 8px;
-	top: 61px;
+	top: 30px;
 	left:0px;
 	width: 76px;
 	background-color: #fff;
 	border-radius: 0 0 3px 0;
 	z-index: 20;
+	max-height: calc(100vh - 30px);
+	overflow-y: auto;
+	overflow-x: hidden;
 }
 
 
@@ -15,6 +18,16 @@
 	position: relative;
 	margin-bottom: 20px;
 }
+
+
+.toolbarSection.extraSpace {
+	margin-bottom: 30px;
+}
+
+.toolbarSection:last-child {
+	margin-bottom: 0;	
+}
+
 
 .tool {
 	position: relative;
@@ -63,99 +76,83 @@
 	background-position: 2px;
 }
 
+
+.toolbarLabel {
+	top: -18px;
+	position: absolute;
+	color: #888;
+	font-size: 0.85em;
+	display:block;
+	margin-bottom: 3px;
+}
+
+.opacityInput {
+	width: 100%;
+}
+
+
+.blendModeSelect {
+	width: 100%;
+	padding: 0;
+}
+
+.strokeInput {
+	width: 100%;
+}
+
+.strokeButtons {
+	position: absolute;
+	top: 0;
+	right: 0;
+	display:inline-block;
+	height: 22px;
+	margin: 0;
+	padding: 0;
+	vertical-align: bottom;
+	line-height: 0;
+}
+
+
+.inputHelper {
+	border: 0;
+	background-color: transparent;
+	margin: 0 0 1px 0;
+	width: 21px;
+	height: 10px;
+	text-align: center;
+	padding: 0;
+	display:block;
+	line-height: 0;
+	outline:none;
+}
+
+
 .statusBar {
 	position: fixed;
 	bottom: 0;
-	left: 0;
+	right: 0;
 	background-color: white;
-	border-radius: 0 3px 0 0;
+	border-radius: 3px 0 0 0;
 	margin: 0;
 	padding: 5px;
 	height: 33px;
 }
 
-.toolbarSection {
-	position: relative;	
+.statusBarSection {
+	position: relative;
+	display:inline-block;
+	margin-left: 1em;
+}
+
+.selectionTypeLabel {
+	color: #aaa;
+}
+
+.selectionTypeLabel:not(.none) {
+	color: #009dec;
 }
 
 .zoomInput {
 	width: 60px;
 }
 
-
-/* tool palettes */
-
-
-.palettejs-panel {
-	position: absolute;
-	top: 74px;
-	left: 90px;
-	background-color: #fff;
-	padding: 10px;
-	border-radius: 0 0 3px 3px;
-}
-
-.palettejs-panel .options {
-	margin-bottom: 0.4em;
-	clear:both;
-}
-
-.palettejs-panel .option-section:after {
-	content: "";
-	display:table;
-	clear:both;
-	margin-bottom: 0.4em;
-}
-
-.palettejs-panel h3 {
-	font-size: 0.85em;
-	margin: -7px -10px 6px -10px;
-	padding: 5px 10px;
-	cursor: move;
-	color: #999;
-}
-
-.palettejs-panel input[type=number] {
-	width: 40px;
-	margin: 0;
-}
-
-.palettejs-panel input[type=checkbox] {
-	margin: 0;
-}
-
-.palettejs-panel label {
-	margin-right: 10px;
-	display:block;
-	float:left;
-	line-height: 1.8;
-}
-
-.palettejs-panel label,
-.palettejs-panel input,
-.palettejs-panel select,
-.palettejs-panel button {
-	font-size: 0.85em;
-}
-
-.palettejs-panel input,
-.palettejs-panel select {
-	text-align: right;
-	display:inline-block;
-	float:right;
-}
-
-.palettejs-panel button {
-	width: 100%;
-}
-
-.palettejs-panel .toolOptionResetButton {
-	position: absolute;
-	width: 16px;
-	height: 16px;
-	top: 7px;
-	right: 10px;
-	text-align: center;
-	padding: 1px;
-	line-height: 0;
-}

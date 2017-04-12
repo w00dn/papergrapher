@@ -25,8 +25,18 @@ pg.item = function() {
 	};
 	
 	
+	var isGroupItem = function(item) {
+		return item && item.className && item.className === 'Group';
+	};
+	
+	
 	var isPointTextItem = function(item) {
 		return item.className === 'PointText';
+	};
+	
+	
+	var isPGTextItem = function(item) {
+		return getRootItem(item).data.isPGTextItem;
 	};
 	
 	
@@ -52,14 +62,25 @@ pg.item = function() {
 		item.position.y = paper.view.bounds.y + pos.y;
 	};
 	
+	var getRootItem = function(item) {
+		if(item.parent.className == 'Layer') {
+			return item;
+		} else {
+			return getRootItem(item.parent);
+		}
+	};
+	
 	
 	return {
 		isBoundsItem: isBoundsItem,
 		isPathItem: isPathItem,
 		isCompoundPathItem: isCompoundPathItem,
+		isGroupItem: isGroupItem,
 		isPointTextItem: isPointTextItem,
+		isPGTextItem: isPGTextItem,
 		setPivot: setPivot,
 		getPositionInView: getPositionInView,
-		setPositionInView: setPositionInView
+		setPositionInView: setPositionInView,
+		getRootItem: getRootItem
 	};
 }();

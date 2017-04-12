@@ -1,9 +1,17 @@
+// scale tool
+
+pg.tools.registerTool({
+	id: 'scale',
+	name: 'Scale',
+	usedKeys : {
+		toolbar : 's'
+	}
+});
 
 pg.tools.scale = function() {
 	var tool;
 	
 	var options = {
-		name: 'Scale',
 		scaleCenter: 'selection',
 		randomScale: false
 	};
@@ -99,11 +107,17 @@ pg.tools.scale = function() {
 						selectedItems[i].scale(amount, selectedItems[i].position);
 						
 					}
+					if(selectedItems[i].data.isPGTextItem) {
+						selectedItems[i].data.wasScaled = true;
+					}
 				}
 				
 			} else {
 				for(var i=0; i < selectedItems.length; i++) {
 					selectedItems[i].scale(amount, fixedGroupPivot);
+					if(selectedItems[i].data.isPGTextItem) {
+						selectedItems[i].data.wasScaled = true;
+					}
 				}				
 			};
 			

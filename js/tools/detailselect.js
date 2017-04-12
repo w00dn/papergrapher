@@ -2,19 +2,65 @@
 // adapted from resources on http://paperjs.org and 
 // https://github.com/memononen/stylii
 
-pg.tools.detailSelect = function() {
-	var tool;
-	
-	var options = {
-		name: 'DetailSelect'
-	};
-	
+pg.tools.registerTool({
+	id: 'detailselect',
+	name: 'Detail select',
+	usedKeys : {
+		toolbar : 'a'
+	}
+});
 
-	var activateTool = function() {
-		pg.selection.setSelectionMode('Segment');
+pg.tools.detailselect = function() {
+	var tool;
+	var keyModifiers = {};
+	
+	var options = {};
+	
+	var menuEntries = {
+		selectionTitle: {
+			type : 'title',
+			text :'Selection'
+		},
+		selectAll: {
+			type: 'button',
+			label: 'Select all',
+			click: 'pg.selection.selectAllSegments'
+		},
+		selectNone: {
+			type: 'button',
+			label: 'Deselect all',
+			click: 'pg.selection.clearSelection'
+		},
+		invertSelection: {
+			type: 'button',
+			label: 'Invert selection',
+			click: 'pg.selection.invertSegmentSelection'
+		},
+		segmentTitle: {
+			type : 'title',
+			text :'Segment'
+		},
+		switchHandles: {
+			type: 'button',
+			label: 'Switch handles',
+			click: 'pg.selection.switchSelectedHandles'
+		},
+		removeSegments: {
+			type: 'button',
+			label: 'Remove segments',
+			click: 'pg.selection.removeSelectedSegments'
+		},
+		splitPath: {
+			type: 'button',
+			label: 'Split path',
+			click: 'pg.selection.splitPathAtSelectedSegments'
+		},
 		
+	};
+
+	var activateTool = function() {		
 		tool = new Tool();
-		
+				
 		var hitOptions = {
 			segments: true,
 			stroke: true,
@@ -22,7 +68,7 @@ pg.tools.detailSelect = function() {
 			handles: true,
 			fill: true,
 			guide: false,
-			tolerance: 5 / paper.view.zoom
+			tolerance: 3 / paper.view.zoom
 		};
 		
 		var doRectSelection = false;
@@ -63,16 +109,15 @@ pg.tools.detailSelect = function() {
 				return;
 			}
 			
+			// dont allow detail-selection of PGTextItem
+			if(hitResult && pg.item.isPGTextItem(pg.item.getRootItem(hitResult.item))) {
+				return;
+			}
 				
 			if(hitResult.type === 'fill' || doubleClicked) {
 
 				hitType = 'fill';
-				if(pg.item.isPointTextItem(hitResult.item) && doubleClicked) {
-					hitResult.item.selected = true;
-					pg.toolbar.switchTool(pg.tools.newToolByName('Text'));
-					pg.toolbar.getActiveTool().quickEditItem(hitResult.item);
-					
-				} else if(hitResult.item.selected) {
+				if(hitResult.item.selected) {
 					if(event.modifiers.shift) {
 						hitResult.item.fullySelected = false;
 					}
@@ -145,8 +190,7 @@ pg.tools.detailSelect = function() {
 				hitResult.segment.handleOut.selected = true;
 			}
 			
-			
-			pg.settingsbar.update(hitResult.item);
+			pg.statusbar.update();
 		};
 		
 		tool.onMouseMove = function(event) {
@@ -160,7 +204,6 @@ pg.tools.detailSelect = function() {
 				selectionRect = pg.guides.rectSelect(event);
 				// Remove this rect on the next drag and up event
 				selectionRect.removeOnDrag();
-				//selectionRect.removeOnUp();
 
 			} else {
 				doRectSelection = false;
@@ -286,13 +329,33 @@ pg.tools.detailSelect = function() {
 
 		};
 		
+		tool.onKeyDown = function(event) {
+			keyModifiers[event.key] = true;
+		};
+		
+		tool.onKeyUp = function(event) {
+			if(keyModifiers.control) {
+				if(event.key == 'a') {
+					pg.selection.selectAllSegments();
+				} else if(event.key == 'i') {
+					pg.selection.invertSegmentSelection();
+				}
+			}
+			keyModifiers[event.key] = false;
+		};
+		
+		// setup floating tool options panel in the editor
+		//pg.toolOptionPanel.setup(options, components, function(){ });
+		
+		pg.menu.setupToolEntries(menuEntries);
+		
 		tool.activate();
 	};
 
 	
 	var deactivateTool = function() {
-		pg.selection.setSelectionMode('None');
 		pg.hover.clearHoveredItem();
+		pg.menu.clearToolEntries();
 	};
 
 

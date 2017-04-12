@@ -11,13 +11,15 @@ pg.input = function() {
 	};
 	
 	var setupKeyboard = function() {
-			
+		var toolList = pg.tools.getToolList();
+		
 		jQuery(document).unbind('keydown').bind('keydown', function (event) {
 
 			if(!isKeyDown(event.keyCode)) {
 				storeDownKey(event.keyCode);
 			}
-			
+
+			/*
 			// ctrl-c / copy
 			if (event.keyCode === 67 && event.ctrlKey) {
 				// only use the clipboard stuff if no text or input text is selected
@@ -25,7 +27,7 @@ pg.input = function() {
 					pg.edit.copySelectionToClipboard();
 				}
 			}
-			
+
 			// ctrl-v / paste
 			if (event.keyCode === 86 && event.ctrlKey) {
 				// only use the clipboard stuff if no text or input text is selected
@@ -33,57 +35,57 @@ pg.input = function() {
 					pg.edit.pasteObjectsFromClipboard();
 				}
 			}
-			
-			// ctrl-a / select all
+			*/
+			// ctrl-a / select all (only prevent default)
 			if (event.keyCode === 65 && event.ctrlKey) {
 				if(!textIsSelected() && !userIsTyping(event)) {
 					event.preventDefault();
-					pg.selection.selectAll();
-					paper.view.update();
 				}
+			}
+			// ctrl-i / invert selection (only prevent default)
+			if (event.keyCode === 73 && event.ctrlKey) {
+				event.preventDefault();
 			}
 			
 			// ctrl-g / group
 			if (event.keyCode === 71 && event.ctrlKey && !event.shiftKey) {
 				event.preventDefault();
-				pg.group.groupSelection();
 			}
-			
+
 			// ctrl-shift-g / ungroup
 			if (event.keyCode === 71 && event.ctrlKey && event.shiftKey) {
 				event.preventDefault();
-				pg.group.ungroupItems(pg.selection.getSelectedItems());
 			}
-			
-			
+
+
 			// ctrl-1 / reset view to 100%
 			if ((event.keyCode === 97 || 
 				 event.keyCode === 49) &&
 				 event.ctrlKey && 
 				 !event.shiftKey) {
-			 
+
 				event.preventDefault();
 				pg.view.resetZoom();
 			}
-			
+
 			// ctrl-z / undo
 			if ((event.keyCode === 90) && event.ctrlKey && !event.shiftKey) {
 				event.preventDefault();
 				pg.undo.undo();
 			}
-			
+
 			// ctrl-shift-z / undo
 			if ((event.keyCode === 90) && event.ctrlKey && event.shiftKey) {
 				event.preventDefault();
 				pg.undo.redo();
 			}
-			
+
 			// backspace / stop browsers "back" functionality
 			if(event.keyCode === 8 && !userIsTyping(event)) {
 				event.preventDefault();
 			}
-			
-			
+
+
 			// everything after this is blocked by mousedown!
 			if(mouseIsDown) return;
 
@@ -92,107 +94,76 @@ pg.input = function() {
 			if(event.keyCode === 18) {
 				event.preventDefault();
 			}
-			
+
 			// esc
 			if(event.keyCode === 27) {
-				pg.style.blurInputs();
+				pg.stylebar.blurInputs();
 			}
-				
+
 			// space / pan tool
 			if(event.keyCode === 32 && !userIsTyping(event)) {
 				event.preventDefault();
-				pg.toolbar.switchTool(pg.tools.newToolByName('ViewGrab'));
+				pg.toolbar.switchTool('viewgrab');
 			}
 		});
-				
+
 
 		jQuery(document).unbind('keyup').bind('keyup', function( event ) {
-			
+
 			// remove event key from downkeys
 			var index = downKeys.indexOf(event.keyCode);
 			if(index > -1) {
 				downKeys.splice(index, 1);
 			}
 
-			
+
 			// alt
 			if(event.keyCode === 18) {
 				// if viewZoom is active and we just released alt,
 				// reset tool to previous
-				if(pg.toolbar.getActiveTool().options.name === 'ViewZoom') {
-					pg.toolbar.switchTool(pg.toolbar.getPreviousTool());
+				if(pg.toolbar.getActiveTool().options.id === 'viewzoom') {
+					pg.toolbar.switchTool(pg.toolbar.getPreviousTool().options.id);
 				}
 			}
 			
 			if(userIsTyping(event)) return;
-			
-			
+
+
 			// space : stop pan tool on keyup
 			if(event.keyCode === 32) {
 				if(!isModifierKeyDown(event)) {
 					event.preventDefault();
-					pg.toolbar.switchTool(pg.toolbar.getPreviousTool());
+					pg.toolbar.switchTool(pg.toolbar.getPreviousTool().options.id);
 				}
 			}
-			
+
 			if(mouseIsDown) return;
 			if(isModifierKeyDown(event)) return;
-			
-			
+
+
 			// ----------------------------------------
 			// keys that don't fire if modifier key down or mousedown or typing
-			
+
 			// backspace, delete : delete selection
 			if(event.keyCode === 8 || event.keyCode === 46) {
 				pg.selection.deleteSelection();
 			}
-			
+
 			// x : switch color
 			if(event.keyCode === 88) {
-				pg.style.switchColors();
+				pg.stylebar.switchColors();
 			}
+
+			// tool keys (switching to tool by key shortcut)
+			jQuery.each(toolList, function(index, toolEntry) {
+				if(toolEntry.usedKeys && toolEntry.usedKeys.toolbar) {
+					if(event.keyCode === toolEntry.usedKeys.toolbar.toUpperCase().charCodeAt(0)) {
+						pg.toolbar.switchTool(toolEntry.id);
+					}
+				}
+			});
 			
-			// v : select tool
-			if(event.keyCode === 86) {
-				pg.toolbar.switchTool(pg.tools.newToolByName('Select'));
-			}
-			
-			// a : fine select tool
-			if(event.keyCode === 65) {
-				pg.toolbar.switchTool(pg.tools.newToolByName('DetailSelect'));
-			}
-			
-			// p : pen/bezier tool
-			if(event.keyCode === 80) {
-				pg.toolbar.switchTool(pg.tools.newToolByName('Bezier'));
-			}
-			
-			// r : rotate tool
-			if(event.keyCode === 82) {
-				pg.toolbar.switchTool(pg.tools.newToolByName('Rotate'));
-			}
-			
-			// s : scale tool
-			if(event.keyCode === 83) {
-				pg.toolbar.switchTool(pg.tools.newToolByName('Scale'));
-			}
-			
-			// t : text tool
-			if(event.keyCode === 84) {
-				pg.toolbar.switchTool(pg.tools.newToolByName('Text'));
-			}
-			
-			// i : eyedropper tool
-			if(event.keyCode === 73) {
-				pg.toolbar.switchTool(pg.tools.newToolByName('Eyedropper'));
-			}
-			
-			// z : zoom tool
-			if(event.keyCode === 90) {
-				pg.toolbar.switchTool(pg.tools.newToolByName('Zoom'));
-			}
 		});
-		
 	};
 	
 	
@@ -256,6 +227,7 @@ pg.input = function() {
 		|| d.tagName.toUpperCase() === 'TEXTAREA') {
 			return true;
 		}
+		
 		return false;
 	};
 
@@ -296,8 +268,8 @@ pg.input = function() {
 
 		jQuery(window).bind('mousewheel DOMMouseScroll', function(event){
 			if(event.altKey) {
-				if (pg.toolbar.getActiveTool().name !== 'ViewZoom') {
-					pg.toolbar.switchTool(pg.tools.newToolByName('ViewZoom'));
+				if (pg.toolbar.getActiveTool().options.id !== 'viewzoom') {
+					pg.toolbar.switchTool('viewzoom');
 				}
 				if(pg.toolbar.getActiveTool()) {
 					pg.toolbar.getActiveTool().updateTool(event);

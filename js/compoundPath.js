@@ -4,7 +4,7 @@ pg.compoundPath = function() {
 	
 	
 	var isCompoundPath = function(item) {
-		return item.className === 'CompoundPath';
+		return item && item.className === 'CompoundPath';
 	};
 	
 	var isCompoundPathChild = function(item) {
@@ -39,7 +39,7 @@ pg.compoundPath = function() {
 			items[i].selected = false;
 		}
 		
-		path = pg.style.applyActiveToolbarStyle(path);
+		path = pg.stylebar.applyActiveToolbarStyle(path);
 		
 		pg.selection.setItemSelection(path, true);
 		pg.undo.snapshot('createCompoundPathFromSelection');

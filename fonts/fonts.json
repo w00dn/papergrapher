@@ -1,0 +1,12 @@
+{
+	"fonts": [
+		"NotoSans-Regular.ttf",
+		"NotoSans-Italic.ttf",
+		"NotoSans-Bold.ttf",
+		"NotoSans-BoldItalic.ttf",
+		"NotoSerif-Regular.ttf",
+		"NotoSerif-Italic.ttf",
+		"NotoSerif-Bold.ttf",
+		"NotoSerif-BoldItalic.ttf"
+	]
+}

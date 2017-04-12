@@ -17,6 +17,11 @@ pg.math = function() {
 	};
 	
 	
+	var getRandomBoolean = function() {
+		return getRandomInt(0,2) == 1 ? false : true;
+	};
+	
+	
 	// Thanks Mikko Mononen! https://github.com/memononen/stylii
 	var snapDeltaToAngle = function(delta, snapAngle) {
 		var angle = Math.atan2(delta.y, delta.x);
@@ -31,6 +36,7 @@ pg.math = function() {
 	return {
 		checkPointsClose:checkPointsClose,
 		getRandomInt:getRandomInt,
+		getRandomBoolean: getRandomBoolean,
 		snapDeltaToAngle:snapDeltaToAngle,
 	};
 	
