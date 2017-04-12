@@ -31,6 +31,7 @@ pg.export = function() {
 		if (fileName !== null) {
 			pg.hover.clearHoveredItem();
 			pg.selection.clearSelection();
+			var activeLayer = pg.layer.getActiveLayer();
 			
 			// backup guide layer, then remove it (with all children) before export
 			var guideLayer = pg.layer.getGuideLayer();
@@ -60,6 +61,9 @@ pg.export = function() {
 						
 					// restore guide layer (with all items) after export
 					paper.project.importJSON(guideLayerBackup);
+					
+					// then reactivate the active layer
+					activeLayer.activate();
 				});
 
 				
@@ -72,6 +76,9 @@ pg.export = function() {
 					
 					// restore guide layer (with all items) after export
 					paper.project.importJSON(guideLayerBackup);
+					
+					// then reactivate the active layer
+					activeLayer.activate();
 				});
 			}
 			
@@ -86,6 +93,8 @@ pg.export = function() {
 		if (fileName !== null) {
 			pg.hover.clearHoveredItem();
 			pg.selection.clearSelection();
+			
+			var activeLayer = pg.layer.getActiveLayer();
 			
 			var fileNameNoExtension = fileName.split(".svg")[0];
 			
@@ -102,6 +111,9 @@ pg.export = function() {
 			
 			// restore guide layer (with all items) after export
 			paper.project.importJSON(guideLayerBackup);
+			
+			// then reactivate the active layer
+			activeLayer.activate();
 		}
 	};
 	
