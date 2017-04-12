@@ -190,6 +190,7 @@ pg.text = function() {
 				}
 				item.remove();
 				var group = new paper.Group();
+				pg.layer.getActiveLayer().addChild(group);
 				group.addChildren(outlines);
 				group.opacity = opacity;
 				group.blendMode = blendMode;
