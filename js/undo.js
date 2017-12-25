@@ -59,10 +59,11 @@ pg.undo = function() {
 	
 	
 	var restore = function(entry) {
+		var activeLayerID = paper.project.activeLayer.data.id;
 		paper.project.clear();
-		paper.project.importJSON(entry.json);
-		pg.layer.deselectAllLayers();
 		paper.view.update();
+		paper.project.importJSON(entry.json);
+		pg.layer.processLayersAfterUndo(activeLayerID);
 	};
 	
 	

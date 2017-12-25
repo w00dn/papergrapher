@@ -41,7 +41,7 @@ pg.helper = function() {
 		var allItems = getAllPaperItems(false);
 		var foundItems = [];
 		jQuery.each(allItems, function(index, item) {
-			if(item.layer.id == id) {
+			if(item.layer.data.id == id) {
 				foundItems.push(item);
 			}
 		});

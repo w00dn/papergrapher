@@ -6,6 +6,7 @@ pg.layer = function() {
 	var setup = function() {
 		var defaultLayer = addNewLayer('Default layer');
 		defaultLayer.data.isDefaultLayer = true;
+		defaultLayer.data.id = getUniqueLayerID();
 		
 		ensureGuideLayer();
 		
@@ -20,7 +21,19 @@ pg.layer = function() {
 	
 	
 	var isActiveLayer = function(layer) {
-		return paper.project.activeLayer == layer;
+		return paper.project.activeLayer.data.id == layer.data.id;
+	};
+	
+	
+	var getUniqueLayerID = function() {
+		var biggestID = 0;
+		for(var i=0; i<paper.project.layers.length; i++) {
+			var layer = paper.project.layers[i];
+			if(layer.data.id > biggestID) {
+				biggestID = layer.data.id;
+			}
+		}
+		return biggestID + 1;
 	};
 		
 	
@@ -28,6 +41,7 @@ pg.layer = function() {
 		if(!getGuideLayer()) {
 			var guideLayer = addNewLayer('pg.internalGuideLayer');
 			guideLayer.data.isGuideLayer = true;
+			guideLayer.data.id = getUniqueLayerID();
 			guideLayer.bringToFront();
 		}
 	};
@@ -39,6 +53,8 @@ pg.layer = function() {
 		elementsToAdd = elementsToAdd || null;
 		
 		var newLayer = new paper.Layer();
+		
+		newLayer.data.id = getUniqueLayerID();
 		
 		if(layerName) {
 			newLayer.name = layerName;
@@ -89,10 +105,15 @@ pg.layer = function() {
 	};
 	
 	
+	var setActiveLayer = function(activeLayer) {
+		activeLayer.activate();
+	}
+	
+	
 	var getLayerByID = function(id) {
 		for(var i=0; i<paper.project.layers.length; i++) {
 			var layer = paper.project.layers[i];
-			if(layer.id == id) {
+			if(layer.data.id == id) {
 				return layer;
 			}
 		}
@@ -154,9 +175,18 @@ pg.layer = function() {
 	};
 	
 	
-	var deselectAllLayers = function() {
-		var selectedItems = pg.selection.getSelectedItems();
+	var processLayersAfterUndo = function(activeLayerID) {
+		for(var i=0; i<paper.project.layers.length; i++) {
+			var layer = paper.project.layers[i];
+			if(layer.data.id == activeLayerID) {
+				pg.layer.setActiveLayer(layer);
+				break;
+			}
+		}
 		
+		pg.layerPanel.updateLayerList();
+		
+		var selectedItems = pg.selection.getSelectedItems();
 		// first deselect layer
 		for(var i=0; i<selectedItems.length; i++) {
 			var item = selectedItems[i];
@@ -185,13 +215,14 @@ pg.layer = function() {
 		addItemsToLayer: addItemsToLayer,
 		addSelectedItemsToActiveLayer: addSelectedItemsToActiveLayer,
 		getActiveLayer: getActiveLayer,
+		setActiveLayer: setActiveLayer,
 		getLayerByID: getLayerByID,
 		getDefaultLayer: getDefaultLayer,
 		activateDefaultLayer: activateDefaultLayer,
 		getGuideLayer: getGuideLayer,
 		getAllUserLayers: getAllUserLayers,
 		changeLayerOrderByIDArray: changeLayerOrderByIDArray,
-		deselectAllLayers: deselectAllLayers
+		processLayersAfterUndo: processLayersAfterUndo
 	};
 
 }();
