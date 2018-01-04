@@ -41,7 +41,7 @@ pg.helper = function() {
 		var allItems = getAllPaperItems(false);
 		var foundItems = [];
 		jQuery.each(allItems, function(index, item) {
-			if(item.layer.data.id == id) {
+			if(item.layer.data.id === id) {
 				foundItems.push(item);
 			}
 		});
@@ -54,7 +54,7 @@ pg.helper = function() {
 		var foundItems = [];
 		jQuery.each(allItems, function(index, item) {
 			jQuery.each(tags, function(ti, tag) {
-				if(item[tag] && foundItems.indexOf(item) == -1) {
+				if(item[tag] && foundItems.indexOf(item) === -1) {
 					foundItems.push(item);
 				}
 			});
@@ -90,10 +90,10 @@ pg.helper = function() {
 	var processFileInput = function (dataType ,input, callback) {
 		var reader = new FileReader();
 		
-		if(dataType == 'text') {
+		if(dataType === 'text') {
 			reader.readAsText(input.files[0]);
 			
-		} else if(dataType == 'dataURL') {
+		} else if(dataType === 'dataURL') {
 			reader.readAsDataURL(input.files[0]);
 		}
 		

@@ -35,6 +35,11 @@ pg.item = function() {
 	};
 	
 	
+	var isLayer = function(item) {
+		return item.className === 'Layer';
+	};
+	
+	
 	var isPGTextItem = function(item) {
 		return getRootItem(item).data.isPGTextItem;
 	};
@@ -63,7 +68,7 @@ pg.item = function() {
 	};
 	
 	var getRootItem = function(item) {
-		if(item.parent.className == 'Layer') {
+		if(item.parent.className === 'Layer') {
 			return item;
 		} else {
 			return getRootItem(item.parent);
@@ -77,6 +82,7 @@ pg.item = function() {
 		isCompoundPathItem: isCompoundPathItem,
 		isGroupItem: isGroupItem,
 		isPointTextItem: isPointTextItem,
+		isLayer: isLayer,
 		isPGTextItem: isPGTextItem,
 		setPivot: setPivot,
 		getPositionInView: getPositionInView,

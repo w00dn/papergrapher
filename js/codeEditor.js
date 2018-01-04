@@ -146,7 +146,7 @@ pg.codeEditor = function(){
 	
 	
 	var loadScriptByID = function(scriptID) {
-		if(scriptID == 'default-script') {
+		if(scriptID === 'default-script') {
 			jQuery('#codeEditorArea').val(defaultScript);
 		} else {
 			jQuery.ajax({

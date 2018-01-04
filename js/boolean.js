@@ -6,7 +6,7 @@ pg.boolean = function() {
 		
 		var result;
 		for(var i=0; i<items.length; i++) {
-			if(i == 0) {
+			if(i === 0) {
 				result = items[0];
 			}
 			var temp = items[i].unite(result, {insert:false});
@@ -30,7 +30,7 @@ pg.boolean = function() {
 		var main;
 		var result;
 		for(var i=0; i<items.length; i++) {
-			if(i == 0) {
+			if(i === 0) {
 				main = items[0];
 			} else {
 				result = items[i].intersect(main, {insert:false});

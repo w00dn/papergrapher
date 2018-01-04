@@ -271,12 +271,12 @@ pg.tools.select = function() {
 			
 			var modOrigSize = origSize;
 			
-			if(mode == 'rectSelection') {
+			if(mode === 'rectSelection') {
 				selectionRect = pg.guides.rectSelect(event);
 				// Remove this rect on the next drag and up event
 				selectionRect.removeOnDrag();
 
-			} else if(mode == 'scale') {
+			} else if(mode === 'scale') {
 				itemGroup = new paper.Group(scaleItems);
 				itemGroup.addChild(boundsPath);
 				itemGroup.data.isHelperItem = true;
@@ -322,7 +322,7 @@ pg.tools.select = function() {
 					}
 				});
 				
-			} else if(mode == 'rotate') {
+			} else if(mode === 'rotate') {
 				var rotAngle = (event.point - rotGroupPivot).angle;
 				
 				jQuery.each(rotItems, function(i, item) {
@@ -343,7 +343,7 @@ pg.tools.select = function() {
 					prevRot[i] = rotAngle;
 				});
 				
-			} else if(mode == 'move' || mode == 'cloneMove') {
+			} else if(mode === 'move' || mode === 'cloneMove') {
 				
 				var dragVector = (event.point - event.downPoint);
 				var selectedItems = pg.selection.getSelectedItems();
@@ -370,11 +370,11 @@ pg.tools.select = function() {
 		tool.onMouseUp = function(event) {
 			if(event.event.button > 0) return; // only first mouse button
 			
-			if(mode == 'rectSelection' && selectionRect) {
+			if(mode === 'rectSelection' && selectionRect) {
 				pg.selection.processRectangularSelection(event, selectionRect);
 				selectionRect.remove();
 				
-			} else if(mode == 'move' || mode == 'cloneMove') {
+			} else if(mode === 'move' || mode === 'cloneMove') {
 				
 				// resetting the items origin point for the next usage
 				var selectedItems = pg.selection.getSelectedItems();
@@ -385,7 +385,7 @@ pg.tools.select = function() {
 				});
 				pg.undo.snapshot('moveSelection');
 				
-			} else if(mode == 'scale') {
+			} else if(mode === 'scale') {
 				itemGroup.applyMatrix = true;
 				
 				// mark text items as scaled (for later use on font size calc)
@@ -400,7 +400,7 @@ pg.tools.select = function() {
 				itemGroup.remove();
 				pg.undo.snapshot('scaleSelection');
 				
-			} else if(mode == 'rotate') {
+			} else if(mode === 'rotate') {
 				jQuery.each(rotItems, function(i, item) {
 					item.applyMatrix = true;
 				});
@@ -424,20 +424,20 @@ pg.tools.select = function() {
 		tool.onKeyUp = function(event) {
 			
 			if(keyModifiers.control && keyModifiers.shift) {
-				if(event.key == 'g') {
+				if(event.key === 'g') {
 					pg.group.ungroupSelection();
 				}
 				
 			} else if(keyModifiers.control) {
-				if(event.key == 'a') {
+				if(event.key === 'a') {
 					pg.selection.selectAllItems();
-				} else if(event.key == 'i') {
+				} else if(event.key === 'i') {
 					pg.selection.invertItemSelection();
-				} else if(event.key == 'g') {
+				} else if(event.key === 'g') {
 					pg.group.groupSelection();
-				} else if(event.key == 'c') {
+				} else if(event.key === 'c') {
 					pg.edit.copySelectionToClipboard();
-				} else if(event.key == 'v') {
+				} else if(event.key === 'v') {
 					pg.edit.pasteObjectsFromClipboard();
 				}	
 			}
@@ -445,7 +445,7 @@ pg.tools.select = function() {
 			keyModifiers[event.key] = false;
 		};
 		
-		jQuery(document).on('DeleteItems Undo Grouped Ungrouped SelectionChanged', function(){
+		jQuery(document).on('DeleteItems Undo Redo Grouped Ungrouped SelectionChanged', function(){
 			setSelectionBounds();
 		});
 		
@@ -462,7 +462,7 @@ pg.tools.select = function() {
 		pg.hover.clearHoveredItem();
 		removeBoundsPath();
 		pg.menu.clearToolEntries();
-		jQuery(document).off('DeleteItems Undo Grouped Ungrouped SelectionChanged');
+		jQuery(document).off('DeleteItems Undo Redo Grouped Ungrouped SelectionChanged');
 	};
 	
 	
@@ -499,11 +499,11 @@ pg.tools.select = function() {
 		jQuery.each(boundsPath.segments, function(index, segment) {
 			var size = 4;
 			
-			if(index%2 == 0) {
+			if(index%2 === 0) {
 				size = 6;
 			}
 			
-			if(index == 7) {
+			if(index === 7) {
 				var offset = new Point(0, 10/paper.view.zoom);
 				boundsRotHandles[index] =
 				new paper.Path.Circle({

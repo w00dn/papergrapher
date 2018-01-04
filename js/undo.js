@@ -63,7 +63,7 @@ pg.undo = function() {
 		paper.project.clear();
 		paper.view.update();
 		paper.project.importJSON(entry.json);
-		pg.layer.processLayersAfterUndo(activeLayerID);
+		pg.layer.reinitLayers(activeLayerID);
 	};
 	
 	

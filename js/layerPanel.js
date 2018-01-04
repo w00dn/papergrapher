@@ -177,7 +177,7 @@ pg.layerPanel = function() {
 				var $entry = jQuery(this);
 				$entry.find('.layerInfo').attr('title','Selected '+selectedItems+'/'+layer.children.length+' Total');
 
-				if(layer.children.length > 0 && selectedItems == layer.children.length) {
+				if(layer.children.length > 0 && selectedItems === layer.children.length) {
 					$entry.find('.layerSelectToggle').prop('checked', true);
 				} else {
 					$entry.find('.layerSelectToggle').prop('checked', false);

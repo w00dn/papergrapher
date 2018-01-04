@@ -168,14 +168,14 @@ pg.menu = function() {
 		$toolMenu.empty().parent().removeClass('empty');
 		var $subMenuAttachParent = null;
 		jQuery.each(entries, function(index, entry) {
-			if(entry.type == 'title') {
+			if(entry.type === 'title') {
 				$toolMenu.append(jQuery('<li class="space"></li>'));
 				var $subSubMenuButton = jQuery('<li class="hasSubSubMenu">'+entry.text+'</li>');
 				$subMenuAttachParent = jQuery('<ul class="subSubMenu">');
 				$subSubMenuButton.append($subMenuAttachParent);
 				$toolMenu.append($subSubMenuButton);
 				
-			} else if(entry.type == 'button') {
+			} else if(entry.type === 'button') {
 				var classString = entry.class ? ' '+entry.class : '' ;
 				var $toolButton = jQuery('<li class="button'+classString+'" data-click="'+entry.click+'">'+entry.label+'</li>');
 				
@@ -186,7 +186,7 @@ pg.menu = function() {
 						hideMenus();
 					}, 100);
 				});
-				if($subMenuAttachParent == undefined) {
+				if($subMenuAttachParent === undefined) {
 					$toolMenu.append($toolButton);
 				} else {
 					$subMenuAttachParent.append($toolButton);

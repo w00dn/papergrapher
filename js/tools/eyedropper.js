@@ -53,6 +53,6 @@ pg.tools.eyedropper = function() {
 	
 	return {
 		options: options,
-		activateTool : activateTool,
+		activateTool : activateTool
 	};
 };

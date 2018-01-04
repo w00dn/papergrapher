@@ -12,7 +12,7 @@ pg.settings = function () {
 			
 			config = data;
 			var storageVersionNumber = localStorage.getItem("pg.version");
-			if(storageVersionNumber && storageVersionNumber != config.appVersion) {
+			if(storageVersionNumber && storageVersionNumber !== config.appVersion) {
 				console.warn('Settings version mismatch. Reverting all settings to default for now.');
 				// version mismatch. removing old settings for now...
 				// some sort of version mismatch handling is needed here

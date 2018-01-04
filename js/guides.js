@@ -114,9 +114,9 @@ pg.guides = function() {
 	
 	
 	var getGuideColor = function(colorName) {
-		if(colorName == 'blue') {
+		if(colorName === 'blue') {
 			return guideBlue;
-		} else if(colorName == 'grey') {
+		} else if(colorName === 'grey') {
 			return guideGrey;
 		}
 	};

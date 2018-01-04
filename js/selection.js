@@ -6,7 +6,7 @@ pg.selection = function() {
 		var activeTool = pg.toolbar.getActiveTool();
 		if(activeTool) {
 			var activeToolID = activeTool.options.id;
-			if(activeToolID == 'detailselect') {
+			if(activeToolID === 'detailselect') {
 				return 'Segment';
 			} else {
 				return 'Item';
@@ -105,7 +105,7 @@ pg.selection = function() {
 	var deleteSelection = function() {
 		var selectionMode = getSelectionMode();
 		
-		if(selectionMode == 'Segment') {
+		if(selectionMode === 'Segment') {
 			deleteSegmentSelection();
 		} else {
 			deleteItemSelection();
@@ -307,6 +307,9 @@ pg.selection = function() {
 
 		for(var i=0; i<allItems.length; i++) {
 			var item = allItems[i];
+			if(pg.item.isLayer(item)) {
+				continue;
+			}
 			if(pg.group.isGroup(item) &&
 				!pg.group.isGroup(item.parent) ||
 				!pg.group.isGroup(item.parent)) {
@@ -344,7 +347,7 @@ pg.selection = function() {
 				selectionType = item.className;
 			}
 			
-			if(selectionType == lastSelectionType || lastSelectionType == '') {
+			if(selectionType === lastSelectionType || lastSelectionType === '') {
 				lastSelectionType = selectionType;
 				
 			} else {
@@ -415,7 +418,7 @@ pg.selection = function() {
 		itemLoop:
 		for(var i=0; i<allItems.length; i++) {
 			var item = allItems[i];
-			if(mode == 'detail' && pg.item.isPGTextItem(pg.item.getRootItem(item))) {
+			if(mode === 'detail' && pg.item.isPGTextItem(pg.item.getRootItem(item))) {
 				continue itemLoop;
 			}
 			// check for item segment points inside selectionRect

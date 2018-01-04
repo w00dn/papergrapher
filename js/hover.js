@@ -40,6 +40,6 @@ pg.hover = function() {
 	
 	return {
 		handleHoveredItem: handleHoveredItem,
-		clearHoveredItem: clearHoveredItem,
+		clearHoveredItem: clearHoveredItem
 	};
 }();

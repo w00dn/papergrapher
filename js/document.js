@@ -71,22 +71,19 @@ pg.document = function() {
 	
 	
 	var loadJSONDocument = function(jsonString) {
+		var activeLayerID = paper.project.activeLayer.data.id;
 		paper.project.clear();
 		pg.toolbar.setDefaultTool();
 		pg.export.setExportRect();
 
 		paper.project.importJSON(jsonString);
 		
-		pg.layer.ensureGuideLayer();
-		
+		pg.layer.reinitLayers(activeLayerID);
+
 		var exportRect = pg.guides.getExportRectGuide();
 		if(exportRect) {
 			pg.export.setExportRect(new paper.Rectangle(exportRect.data.exportRectBounds));
 		}
-		
-		
-		pg.layerPanel.updateLayerList();
-		paper.view.update();
 		pg.undo.snapshot('loadJSONDocument');
 	};
 	

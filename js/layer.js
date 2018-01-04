@@ -175,7 +175,7 @@ pg.layer = function() {
 	};
 	
 	
-	var processLayersAfterUndo = function(activeLayerID) {
+	var reinitLayers = function(activeLayerID) {
 		for(var i=0; i<paper.project.layers.length; i++) {
 			var layer = paper.project.layers[i];
 			if(layer.data.id == activeLayerID) {
@@ -183,25 +183,7 @@ pg.layer = function() {
 				break;
 			}
 		}
-		
 		pg.layerPanel.updateLayerList();
-		
-		var selectedItems = pg.selection.getSelectedItems();
-		// first deselect layer
-		for(var i=0; i<selectedItems.length; i++) {
-			var item = selectedItems[i];
-			if(isLayer(item)) {
-				item.selected = false;
-				//pg.selection.setItemSelection(item, false);
-			}
-		}
-		// then select items again
-		for(var i=0; i<selectedItems.length; i++) {
-			var item = selectedItems[i];
-			if(!isLayer(item)) {
-				pg.selection.setItemSelection(item, true);
-			}
-		}
 	};
 
 	
@@ -222,7 +204,7 @@ pg.layer = function() {
 		getGuideLayer: getGuideLayer,
 		getAllUserLayers: getAllUserLayers,
 		changeLayerOrderByIDArray: changeLayerOrderByIDArray,
-		processLayersAfterUndo: processLayersAfterUndo
+		reinitLayers: reinitLayers
 	};
 
 }();

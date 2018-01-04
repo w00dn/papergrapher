@@ -18,7 +18,7 @@ pg.math = function() {
 	
 	
 	var getRandomBoolean = function() {
-		return getRandomInt(0,2) == 1 ? false : true;
+		return getRandomInt(0,2) === 1 ? false : true;
 	};
 	
 	
@@ -37,7 +37,7 @@ pg.math = function() {
 		checkPointsClose:checkPointsClose,
 		getRandomInt:getRandomInt,
 		getRandomBoolean: getRandomBoolean,
-		snapDeltaToAngle:snapDeltaToAngle,
+		snapDeltaToAngle:snapDeltaToAngle
 	};
 	
 }();

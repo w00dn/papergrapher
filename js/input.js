@@ -18,31 +18,15 @@ pg.input = function() {
 			if(!isKeyDown(event.keyCode)) {
 				storeDownKey(event.keyCode);
 			}
-
-			/*
-			// ctrl-c / copy
-			if (event.keyCode === 67 && event.ctrlKey) {
-				// only use the clipboard stuff if no text or input text is selected
-				if(!textIsSelected() && !userIsTyping(event)) {
-					pg.edit.copySelectionToClipboard();
-				}
-			}
-
-			// ctrl-v / paste
-			if (event.keyCode === 86 && event.ctrlKey) {
-				// only use the clipboard stuff if no text or input text is selected
-				if(!textIsSelected() && !userIsTyping(event)) {
-					pg.edit.pasteObjectsFromClipboard();
-				}
-			}
-			*/
-			// ctrl-a / select all (only prevent default)
+			
+			// only prevent default keypresses (see tools/select.js for more)
+			// ctrl-a / select all
 			if (event.keyCode === 65 && event.ctrlKey) {
 				if(!textIsSelected() && !userIsTyping(event)) {
 					event.preventDefault();
 				}
 			}
-			// ctrl-i / invert selection (only prevent default)
+			// ctrl-i / invert selection
 			if (event.keyCode === 73 && event.ctrlKey) {
 				event.preventDefault();
 			}

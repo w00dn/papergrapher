@@ -4,7 +4,7 @@ pg.geometry = function() {
 	
 	var switchHandle = function(seg, mode) {
 		// simplest first, when we have a mode and its linear
-		if (mode == 'linear') {
+		if (mode === 'linear') {
 			seg.clearHandles();
 			return;
 		}

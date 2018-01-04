@@ -76,7 +76,7 @@ pg.tools.broadbrush = function() {
 			
 			// If this is the first drag event,
 			// add the strokes at the start:
-			if(event.count == 0) {
+			if(event.count === 0) {
 				addStrokes(event.middlePoint, event.delta * -1);
 			} else {
 				var step = (event.delta).normalize(options.brushWidth/2);

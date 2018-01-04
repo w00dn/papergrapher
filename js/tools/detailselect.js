@@ -54,7 +54,7 @@ pg.tools.detailselect = function() {
 			type: 'button',
 			label: 'Split path',
 			click: 'pg.selection.splitPathAtSelectedSegments'
-		},
+		}
 		
 	};
 
@@ -335,9 +335,9 @@ pg.tools.detailselect = function() {
 		
 		tool.onKeyUp = function(event) {
 			if(keyModifiers.control) {
-				if(event.key == 'a') {
+				if(event.key === 'a') {
 					pg.selection.selectAllSegments();
-				} else if(event.key == 'i') {
+				} else if(event.key === 'i') {
 					pg.selection.invertSegmentSelection();
 				}
 			}

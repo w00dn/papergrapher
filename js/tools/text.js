@@ -93,11 +93,11 @@ pg.tools.text = function () {
 		
 	 
 		tool.onMouseDown = function (event) {
-			if(toolMode == 'edit') {
+			if(toolMode === 'edit') {
 				finalizeInput();
 			}
 			
-			if(toolMode == 'create') {
+			if(toolMode === 'create') {
 				toolMode = 'edit';
 				if(hitItem) {
 					pg.selection.clearSelection();
@@ -187,7 +187,7 @@ pg.tools.text = function () {
 				}
 
 				var angle = helperCurve.line.vector.angle;
-				if(textAngle != 0) {
+				if(textAngle !== 0) {
 					textItem.rotation = textAngle-angle;
 				}
 			}
@@ -235,7 +235,7 @@ pg.tools.text = function () {
 		for(var i=0; i<importedFonts.length; i++) {
 			var font = importedFonts[i];
 			var $familyOption = jQuery('<option value="'+font.name+'">'+font.name+'</option>');
-			if(options.fontFamily == font.name) {
+			if(options.fontFamily === font.name) {
 				$familyOption.attr('selected', true);
 			}
 			$familySelect.append($familyOption);
@@ -258,11 +258,11 @@ pg.tools.text = function () {
 		$styleSelect.empty();
 		for(var i=0; i<importedFonts.length; i++) {
 			var font = importedFonts[i];
-			if(font.name == selectedFamily) {
+			if(font.name === selectedFamily) {
 				for(var j=0; j<font.styles.length; j++) {
 					var fStyle = font.styles[j];
 					var $option = jQuery('<option value="'+fStyle.style+'">'+fStyle.style+'</option>');
-					if(options.fontStyle == fStyle.style) {
+					if(options.fontStyle === fStyle.style) {
 						$option.attr('selected', true);
 					}
 					$styleSelect.append($option);
@@ -310,7 +310,7 @@ pg.tools.text = function () {
 	
 	var finalizeInput = function () {
 		var $textInput = jQuery('#textToolInput');
-		if ($textInput.val() == '') {
+		if ($textInput.val() === '') {
 			textItem.remove();
 			
 		} else {
